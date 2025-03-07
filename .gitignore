@@ -1,0 +1,14 @@
+# Ignore dependencies
+node_modules/
+apps/frontend/node_modules/
+
+# Next.js build artifacts
+.next/
+apps/frontend/.next/
+apps/frontend/.turbo/
+
+# Logs & temporary files
+logs
+*.log
+npm-debug.log*
+.DS_Store

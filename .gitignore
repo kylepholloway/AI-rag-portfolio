@@ -13,3 +13,4 @@ logs
 npm-debug.log*
 .DS_Store
 apps/frontend/.env.local
+.vercel

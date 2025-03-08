@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model KnowledgeBase {
+  id        String  @id @default(uuid()) // Unique ID
+  category  String  // "Work Experience", "Case Studies", "Projects"
+  title     String  // "VP of Engineering at BRINK"
+  content   String  // Full text (resume, project details)
+  metadata  Json?   // Optional metadata
+  embedding Float[] // Store as an array of floats
+  createdAt DateTime @default(now())
+}
+
+model MultimediaAsset {
+  id          String  @id @default(uuid())
+  category    String  // "Figma Mockup", "Code Sample", "Design System"
+  title       String  // "Atomic Design System Overview"
+  description String? // Description of the asset
+  mediaUrl    String  // Hosted image, video, or prototype link
+  metadata    Json?   // Extra metadata (tags, dimensions)
+  createdAt   DateTime @default(now())
+}
+
+model UserQueries {
+  id        String  @id @default(uuid())
+  query     String  // User's search query
+  response  String  // AI's response
+  createdAt DateTime @default(now())
+}

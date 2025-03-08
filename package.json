@@ -6,14 +6,29 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "preinstall": "npx only-allow pnpm",
+    "prisma:studio": "pnpm exec prisma studio",
+    "prisma:migrate": "pnpm exec prisma migrate dev",
+    "prisma:migrate:deploy": "pnpm exec prisma migrate deploy",
+    "prisma:generate": "pnpm exec prisma generate",
+    "prisma:seed": "pnpm exec tsx prisma/seed.ts",
+    "prisma:push": "pnpm exec prisma db push",
+    "prisma:pull": "pnpm exec prisma db pull",
+    "prisma:reset": "pnpm exec prisma migrate reset --force"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@prisma/client": "^6.4.1",
     "@vercel/edge": "^1.2.1",
     "ai": "^4.1.54",
     "axios": "^1.8.2",
     "next": "15.2.1",
     "openai": "^4.86.2",
+    "pg": "^8.13.3",
+    "pgvector": "^0.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
@@ -24,8 +39,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }

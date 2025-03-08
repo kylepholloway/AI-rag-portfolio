@@ -9,7 +9,7 @@ export default function Chat() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim()) return; // Prevent empty submissions
 
     setLoading(true);
     setResponse("");
@@ -21,14 +21,21 @@ export default function Chat() {
       const res = await axios.post(
         "/api/chat",
         { prompt: input },
-        { headers: { "Content-Type": "application/json" } } // ✅ Ensure JSON is sent properly
+        { headers: { "Content-Type": "application/json" } }
       );
 
       console.log("✅ API Response:", res.data);
       setResponse(res.data.reply);
-    } catch (err: any) {
-      console.error("❌ Chat API Error:", err.response?.data || err.message);
-      setError(err.response?.data?.error || "Failed to get a response. Please try again.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        // Axios error handling
+        console.error("❌ Chat API Error:", err.response?.data || err.message);
+        setError(err.response?.data?.error || "Failed to get a response. Please try again.");
+      } else {
+        // Non-Axios error (e.g., network issues, unknown errors)
+        console.error("❌ Unexpected Error:", err);
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }

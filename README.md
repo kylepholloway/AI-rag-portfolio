@@ -1,40 +1,224 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+**🚀 AI-Powered RAG Portfolio**
+-------------------------------
 
-## Getting Started
+An interactive, AI-driven **resume & portfolio assistant** that lets recruiters and hiring managers **ask questions about Kyle Holloway's skills, experience, and projects**.
 
-First, run the development server:
+### **🔹 Tech Stack**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+-   **Frontend:** Next.js (React + TailwindCSS)
+-   **Backend:** API routes (`/api/chat`) powered by OpenAI
+-   **Database:** PostgreSQL with `pgvector` for similarity search
+-   **Hosting:** Vercel (for Next.js) + Neon DB (PostgreSQL)
+-   **AI Model:** OpenAI (`text-embedding-ada-002` for vector search, `gpt-3.5-turbo` for response generation)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* * * * *
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+**🔥 Features**
+---------------
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+✅ **AI-Powered Chat:** Ask Kyle's AI assistant about his **skills, experience, and projects**\
+✅ **Vector Search (RAG):** Retrieves **relevant resume data** from PostgreSQL using `pgvector`\
+✅ **Instant API Response:** Seamlessly integrates **OpenAI embeddings + vector retrieval**\
+✅ **Fast & Scalable:** Hosted on **Vercel**, using **Neon DB** for efficient query execution\
+✅ **Optimized for Hiring:** Recruiters can ask **specific technical and leadership questions**
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+* * * * *
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**🚀 System Architecture**
+--------------------------
 
-## Learn More
+1️⃣ **User enters a question in the chat.**\
+2️⃣ **API (`/api/chat`) sends the prompt to OpenAI's embedding model (`text-embedding-ada-002`).**\
+3️⃣ **The system retrieves relevant records from PostgreSQL (`pgvector` similarity search).**\
+4️⃣ **The retrieved content is sent to OpenAI (`gpt-3.5-turbo`) for a structured response.**\
+5️⃣ **The AI-generated response is displayed on the UI.**
 
-To learn more about Next.js, take a look at the following resources:
+* * * * *
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+**🛠 Setup & Installation**
+---------------------------
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **1️⃣ Clone the Repository**
 
-## Deploy on Vercel
+bash
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+CopyEdit
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+`git clone https://github.com/your-repo/ai-rag-portfolio.git
+cd ai-rag-portfolio`
+
+### **2️⃣ Install Dependencies**
+
+bash
+
+CopyEdit
+
+`pnpm install`
+
+### **3️⃣ Configure Environment Variables (`.env`)**
+
+Create a `.env` file with the following:
+
+env
+
+CopyEdit
+
+`DATABASE_URL="postgresql://your-db-user:your-db-password@your-db-host/your-db-name"
+OPENAI_API_KEY="your-openai-api-key"`
+
+### **4️⃣ Initialize the Database**
+
+Run migrations to set up the **PostgreSQL schema**:
+
+bash
+
+CopyEdit
+
+`pnpm exec prisma migrate dev --name init`
+
+Seed the database:
+
+bash
+
+CopyEdit
+
+`pnpm run prisma:seed`
+
+### **5️⃣ Start the Development Server**
+
+bash
+
+CopyEdit
+
+`pnpm run dev`
+
+Open **<http://localhost:3000>** in your browser.
+
+* * * * *
+
+**🧠 Key Components**
+---------------------
+
+### **📂 Frontend (`index.tsx`)**
+
+The **chat interface** where users enter queries:
+
+-   **Sends requests** to `/api/chat`
+-   **Displays AI responses**
+-   **Handles loading & errors gracefully**
+
+### **📂 API (`/api/chat.ts`)**
+
+The backend logic for **retrieval-augmented generation (RAG)**:
+
+-   **Generates OpenAI embeddings** for the query
+-   **Performs a similarity search** on `pgvector`
+-   **Formats retrieved data into structured context**
+-   **Generates a response using `gpt-3.5-turbo`**
+
+### **📂 Database (`PostgreSQL + pgvector`)**
+
+Stores **structured resume data**:
+
+-   **Embedding column (`vector(1536)`)** allows **fast AI similarity searches**
+-   **Indexing improves performance** (IVFFLAT recommended)
+
+* * * * *
+
+**🔥 Debugging & Common Fixes**
+-------------------------------
+
+### **1️⃣ PostgreSQL Type Mismatch (`vector <-> numeric[]`)**
+
+✅ **Fix:** Ensure correct casting in query:
+
+ts
+
+CopyEdit
+
+`results = await prisma.$queryRawUnsafe(
+  `SELECT title, content FROM "KnowledgeBase" WHERE embedding IS NOT NULL ORDER BY embedding <-> CAST($1 AS vector) LIMIT 3`,
+  embedding
+);`
+
+### **2️⃣ Prisma Query Parameter Error (`Expected: 1, actual: 0`)**
+
+✅ **Fix:** Pass `embedding` **directly** instead of as an array:
+
+ts
+
+CopyEdit
+
+`embedding // ✅ Correct
+[embedding] // ❌ Incorrect`
+
+### **3️⃣ No Results Found in Vector Search**
+
+✅ **Fix:** Ensure database is **seeded with embeddings**:
+
+bash
+
+CopyEdit
+
+`pnpm run prisma:seed`
+
+Run SQL to check stored vectors:
+
+sql
+
+CopyEdit
+
+`SELECT * FROM "KnowledgeBase" LIMIT 5;`
+
+### **4️⃣ OpenAI Embedding Returns `null`**
+
+✅ **Fix:** Log the response:
+
+ts
+
+CopyEdit
+
+`console.log("🧠 OpenAI Embedding Response:", JSON.stringify(embeddingResponse, null, 2));`
+
+If empty, check **API key** or **OpenAI API status**.
+
+* * * * *
+
+**🚀 Deployment Guide**
+-----------------------
+
+### **1️⃣ Deploy Next.js Frontend to Vercel**
+
+bash
+
+CopyEdit
+
+`pnpm run build
+pnpm run start`
+
+Connect to **Vercel** for hosting.
+
+### **2️⃣ Deploy PostgreSQL (`pgvector`) on Neon DB**
+
+Use **Neon DB** for **managed, scalable Postgres with `pgvector` support**.\
+Modify `DATABASE_URL` in `.env` with your **Neon DB credentials**.
+
+### **3️⃣ Add Database Indexing for Performance**
+
+sql
+
+CopyEdit
+
+`CREATE INDEX knowledgebase_embedding_idx ON "KnowledgeBase" USING ivfflat (embedding);`
+
+This speeds up **vector similarity searches**.
+
+* * * * *
+
+**💡 Future Enhancements**
+--------------------------
+
+✔ **🎨 Improve UI:** Add **message history, avatars, and animations**\
+✔ **📊 Advanced RAG Search:** Use **hybrid search** (vector + keyword search)\
+✔ **🔍 Better Model Selection:** Experiment with **GPT-4, Claude, or Mistral**\
+✔ **📂 File Uploads:** Let users **upload resumes** for **AI-powered search**

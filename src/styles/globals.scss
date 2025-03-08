@@ -2,16 +2,16 @@
 /// Main Imports
 ////////////////////
 
+// Variables
+@use "variables/animations" as *;
+@use "variables/breakpoints" as *;
+@use "variables/colors" as *;
+@use "variables/forms" as *;
+@use "variables/spacing" as *;
+@use "variables/typography" as *;
+@use "variables/shadows" as *;
+@use "variables/radius" as *;
+
 * {
     box-sizing: border-box;
 }
-
-// Variables
-@import "variables/_animations.scss";
-@import "variables/_breakpoints.scss";
-@import "variables/_colors.scss";
-@import "variables/_forms.scss";
-@import "variables/_spacing.scss";
-@import "variables/_typography.scss";
-@import "variables/_shadows.scss";
-@import "variables/_radius.scss";

@@ -1,16 +1,35 @@
 # Ignore dependencies
 node_modules/
-apps/frontend/node_modules/
 
 # Next.js build artifacts
 .next/
-apps/frontend/.next/
-apps/frontend/.turbo/
+.turbo/
 
 # Logs & temporary files
-logs
+logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 .DS_Store
-apps/frontend/.env.local
+
+# Ignore environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Vercel deployment
 .vercel
+
+# Optional: Ignore Next.js cache (can speed up builds)
+.next/cache/
+
+# Ignore Prisma migrations (if using Prisma)
+prisma/migrations/
+
+# Ignore Postgres local database files (if using SQLite locally)
+*.sqlite
+*.sqlite-journal

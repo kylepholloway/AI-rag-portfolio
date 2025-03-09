@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector", schema: "extensions")]  // Add the pgvector extension
 }
 
 model KnowledgeBase {
@@ -13,7 +15,7 @@ model KnowledgeBase {
   title     String  // "VP of Engineering at BRINK"
   content   String  // Full text (resume, project details)
   metadata  Json?   // Optional metadata
-  embedding Float[] // Store as an array of floats
+  embedding Unsupported("vector(1536)")? // Store as an unsupported type
   createdAt DateTime @default(now())
 }
 

@@ -10,11 +10,13 @@
 }
 
 .container {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex: 1;
+    z-index: 1;
 
     &__intro {
         display: flex;
@@ -51,16 +53,4 @@
             }
         }
     }
-}
-
-.form {
-
-    // &__loading {
-    //     position: absolute;
-    //     left: 0;
-    //     top: calc(var(--space-lg) * -1);
-    //     color: var(--color-light);
-    //     letter-spacing: 4px;
-    //     @include body('Alt');
-    // }
 }

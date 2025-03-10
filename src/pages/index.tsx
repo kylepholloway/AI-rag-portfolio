@@ -7,6 +7,7 @@ import Image from "next/image";
 import Avatar from "@/assets/images/Avatar.png";
 import Rocket from "@/assets/icons/rocket.svg";
 import Loader from "@/components/loader";
+import Particles from "@/components/particles";
 
 export default function Chat() {
   const [input, setInput] = useState("");
@@ -53,6 +54,7 @@ export default function Chat() {
 
   return (
     <div className={styles.wrapper}>
+      <Particles></Particles>
       <Navbar></Navbar>
 
       {/* Main */}

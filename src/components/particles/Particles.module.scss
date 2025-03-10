@@ -1,0 +1,67 @@
+@use "sass:math";
+@use "sass:list";
+
+// Animation Durations
+$durations: (60s, 120s, 180s, 400s);
+
+// Function to Generate Random Particle Positions
+@function particles($max) {
+  $val: 0 0 var(--color-gray-900);
+  @for $i from 1 through $max {
+    $val: #{$val}, 
+          math.random(math.div(100vw, 1vw)) * 1vw 
+          math.random(math.div(100vh, 1vh)) * 1vh 
+          var(--color-gray-800);
+  }
+  @return $val;
+}
+
+// Mixin for Particle Shadows
+@mixin particles($max) {
+  box-shadow: particles($max);
+}
+
+// Particle Animation
+@keyframes particles {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100vh);
+  }
+}
+
+// Space Container
+.space {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+}
+
+// Particle Styles (Dynamic Based on Data Attribute)
+.particle {
+  position: absolute;
+  background: var(--color-gray-900);
+  border-radius: var(--radius-md);
+  filter: blur(1px);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 100vh;
+  }
+
+  @for $i from 1 through list.length($durations) {
+    &[data-index="#{$i}"] {
+      width: #{($i * 1.5px) * 0.75};
+      height: #{($i * 1.5px) * 0.75};
+      animation: particles list.nth($durations, $i) linear infinite;
+      @include particles(100 * $i);
+    }
+  }
+}

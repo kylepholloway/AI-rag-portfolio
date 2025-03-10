@@ -1,10 +1,10 @@
 @use "../variables/breakpoints" as *;
+@use "../variables/fonts" as *;
 
 ////////////////////////
 /// Typography Variables
 ////////////////////////
 :root {
-  --font-family-primary: var(--font-inter);
 
   // Typescale
   --font-size-base: 1rem; // 1rem = 16px
@@ -33,59 +33,75 @@
 }
 
 ////////////////////////
+/// Heading Mixins
+////////////////////////
+@mixin heading-1($variant: '') {
+  font-family: if($variant == 'Alt', var(--font-family-secondary), var(--font-family-primary));
+  font-size: var(--font-size-4xl);
+  font-weight: if($variant == 'Alt', var(--font-weight-medium), var(--font-weight-bold));
+}
+
+@mixin heading-2($variant: '') {
+  font-family: if($variant == 'Alt', var(--font-family-secondary), var(--font-family-primary));
+  font-size: var(--font-size-3xl);
+  font-weight: if($variant == 'Alt', var(--font-weight-medium), var(--font-weight-bold));
+}
+
+@mixin heading-3($variant: '') {
+  font-family: if($variant == 'Alt', var(--font-family-secondary), var(--font-family-primary));
+  font-size: var(--font-size-2xl);
+  font-weight: if($variant == 'Alt', var(--font-weight-medium), var(--font-weight-bold));
+}
+
+@mixin heading-4($variant: '') {
+  font-family: if($variant == 'Alt', var(--font-family-secondary), var(--font-family-primary));
+  font-size: var(--font-size-xl);
+  font-weight: if($variant == 'Alt', var(--font-weight-medium), var(--font-weight-bold));
+}
+
+@mixin heading-5($variant: '') {
+  font-family: if($variant == 'Alt', var(--font-family-secondary), var(--font-family-primary));
+  font-size: var(--font-size-lg);
+  font-weight: if($variant == 'Alt', var(--font-weight-regular), var(--font-weight-medium));
+}
+
+@mixin heading-6($variant: '') {
+  font-family: if($variant == 'Alt', var(--font-family-secondary), var(--font-family-primary));
+  font-size: var(--font-size-md);
+  font-weight: if($variant == 'Alt', var(--font-weight-regular), var(--font-weight-medium));
+}
+
+////////////////////////
+/// Paragraph Mixin
+////////////////////////
+@mixin paragraph($variant: '') {
+  @if $variant == 'alt' {
+    font-family: var(--font-family-tertiary);
+    font-size: var(--font-size-sm);
+  } @else {
+    font-family: var(--font-family-primary);
+    font-size: if($variant == 'sm', var(--font-size-sm),
+                 if($variant == 'xs', var(--font-size-xs),
+                 var(--font-size-base)));
+  }
+  font-weight: var(--font-weight-regular);
+}
+
+////////////////////////
 /// Headings and Paragraph Styles
 ////////////////////////
 
-h1 {
-  font-size: var(--font-size-4xl);
-  margin: 0 0 var(--space-base) 0;
-  font-weight: 700;
-}
-
-h2 {
-  font-size: var(--font-size-3xl);
-  margin: 0 0 var(--space-base) 0;
-  font-weight: 700;
-}
-
-h3 {
-  font-size: var(--font-size-2xl);
-  margin: 0 0 var(--space-base) 0;
-  font-weight: 700;
-}
-
-h4 {
-  font-size: var(--font-size-xl);
-  margin: 0 0 var(--space-base) 0;
-  font-weight: 700;
-}
-
-h5 {
-  font-size: var(--font-size-lg);
-  margin: 0 0 var(--space-base) 0;
-  font-weight: 500;
-}
-
-h6 {
-  font-size: var(--font-size-md);
-  margin: 0 0 var(--space-base) 0;
-  font-weight: 500;
-}
-
-p {
-  font-size: var(--font-size-base);
-  font-weight: 400;
-}
+h1 { @include heading-1; }
+h2 { @include heading-2; }
+h3 { @include heading-3; }
+h4 { @include heading-4; }
+h5 { @include heading-5; }
+h6 { @include heading-6; }
+p { @include paragraph; }
 
 ////////////////////////
 /// Utility Classes for Smaller Sizes
 ////////////////////////
-.font-size--sm {
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-}
-
-.font-size--xs {
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-}
+.font-size--sm { @include paragraph('sm'); }
+.font-size--xs { @include paragraph('xs'); }
+.font-size--alt { @include paragraph('alt'); }

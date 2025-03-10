@@ -1,0 +1,56 @@
+@use '../mixins/typography' as *;
+
+////////////////////
+/// Form Styles
+////////////////////
+
+form {
+    position: relative;
+
+    input {
+        width: 600px;
+        background: var(--color-gray-800);
+        color: var(--color-light);
+        border: 1px solid var(--color-gray-400);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-base) var(--space-md);
+        transition: var(--transition-basic);
+        @include body();
+
+        &:hover {
+            border-color: var(--color-gray-200);
+        }
+
+        &:active, &:focus {
+            outline: none;
+            border-color: var(--color-light);
+        }
+    }
+
+    button {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        width: var(--space-md);
+        height: var(--space-md);
+        background: transparent;
+        border: none;
+        padding: 0;
+        top: 50%;
+        right: var(--space-md);
+        transform: translateY(-50%);
+        fill: var(--color-primary);
+        transition: var(--transition-basic);
+        cursor: pointer;
+        z-index: 999;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        &:disabled  {
+            cursor: not-allowed;
+            fill: var(--color-gray-400);
+        }
+    }
+}

@@ -57,8 +57,6 @@ export default function Chat() {
 
       {/* Main */}
       <section className={styles.container}>
-
-        {/* Intro */}
         <div className={styles.container__intro}>
           <Image src={Avatar} alt="Avatar"></Image>
           <div>
@@ -66,22 +64,8 @@ export default function Chat() {
             <p>An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.</p>
           </div>
         </div>
-
-        {/* Chat Feed */}
-        {response && (
-        <div className={styles.response}>
-          <p className={styles.responseTitle}>AI Response:</p>
-          <p className={styles.responseText}>{response}</p>
-        </div>
-      )}
-
-      {error && <p className={styles.error}>{error}</p>}
-
-      {/* Chat Form */}
       <form onSubmit={handleSubmit} className={styles.form}>
-        {loading &&
-        <Loader text="GENERATING..." />
-        }
+        {loading && <Loader text="GENERATING..." />}
 
         <input
           value={input}
@@ -93,6 +77,15 @@ export default function Chat() {
           <Rocket />
         </button>
       </form>
+
+      {response && (
+        <div className={styles.response}>
+          <p className={styles.responseTitle}>AI Response:</p>
+          <p className={styles.responseText}>{response}</p>
+        </div>
+      )}
+
+      {error && <p className={styles.error}>{error}</p>}
       </section>
       <Footer></Footer>
     </div>

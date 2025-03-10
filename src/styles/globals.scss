@@ -9,7 +9,6 @@
 @use "variables/animations" as *;
 @use "variables/colors" as *;
 @use "variables/fonts" as *;
-@use "variables/forms" as *;
 @use "variables/spacing" as *;
 @use "variables/typography" as *;
 @use "variables/radius" as *;
@@ -20,6 +19,7 @@
 
 // Utilities
 @use "utilities/fonts" as *;
+@use "utilities/forms" as *;
 @use "utilities/typography" as *;
 
 * {

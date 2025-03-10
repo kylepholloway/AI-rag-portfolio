@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-bottom: var(--space-lg);
+    width: 600px;
+}
+
+.wrapper {
+    display: flex;
+    width: fit-content;
+    gap: var(--space-xs);
+
+    > svg {
+        width: var(--space-md);
+        height: var(--space-md);
+    }
+
+    > p {
+        background-color: var(--color-gray-600);
+        color: var(--color-light);
+        padding: var(--space-xs) var(--space-base);
+        border-radius: var(--radius-lg);
+        max-width: 400px;
+    }
+}

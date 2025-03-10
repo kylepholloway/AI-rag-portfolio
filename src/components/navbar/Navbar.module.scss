@@ -1,4 +1,6 @@
 .container {
+    position: relative;
     width: 100vw;
     padding: var(--space-md);
+    z-index: 1;
 }

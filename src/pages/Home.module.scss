@@ -17,6 +17,7 @@
     justify-content: center;
     flex: 1;
     z-index: 1;
+    overflow: hidden;
 
     &__bottom {
         justify-content: flex-end;
@@ -35,6 +36,7 @@
             opacity: 0;
             transform: translateY(-20px);
             transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
         }
 
         > img {
@@ -62,6 +64,42 @@
                 color: var(--color-light);
                 max-width: 500px;
                 @include body();
+            }
+        }
+    }
+
+    &__chat {
+        position: relative;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        align-self: flex-end;
+        padding: 0 var(--space-base);
+        width: 100%;
+
+        &::-webkit-scrollbar {
+            width: 0;
+            position: absolute;
+            right: 0;
+            transition: var(--transition-basic);
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--color-gray-800);
+            border-radius: var(--radius-sm);
+            border-color: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: var(--color-primary-dark);
+        }
+
+        &:hover {
+            &::-webkit-scrollbar {
+                width: var(--space-xs);
             }
         }
     }

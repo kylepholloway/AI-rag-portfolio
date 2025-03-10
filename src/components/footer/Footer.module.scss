@@ -1,6 +1,7 @@
 @use '../../styles/mixins/typography' as *;
 
 .container {
+    position: relative;
     width: 100vw;
     display: flex;
     justify-content: space-between;
@@ -8,6 +9,7 @@
     padding: var(--space-md);
     color: var(--color-gray-200);
     margin-top: var(--space-lg);
+    z-index: 1;
 }
 
 .author {

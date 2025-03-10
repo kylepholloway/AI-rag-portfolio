@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styles from "./Home.module.scss";
 import Navbar from "@/components/navbar";
@@ -9,42 +9,61 @@ import Rocket from "@/assets/icons/rocket.svg";
 import Loader from "@/components/loader";
 import Particles from "@/components/particles";
 import AIResponse from "@/components/ai-response";
+import UserPrompt from "@/components/user-prompt";
 
 export default function Chat() {
   const [input, setInput] = useState("");
-  const [response, setResponse] = useState("");
+  const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Loading state
+  const [introHidden, setIntroHidden] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (history.length > 0) {
+      const timer = setTimeout(() => setIntroHidden(true), 500); // Match the CSS transition duration
+      return () => clearTimeout(timer);
+    }
+  }, [history]);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [history]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return; // Prevent empty submissions
+    if (!input.trim()) return;
 
     setLoading(true);
-    setResponse("");
     setError("");
 
+    const userMessage = { role: "user", content: input };
+    setHistory((prev) => [...prev, userMessage]); // ✅ Display user input instantly
+
+    setInput("");
+
     try {
-      console.log("🔹 Sending Request to API:", { prompt: input });
+      console.log("🔹 Sending Request to API:", { messages: [...history, userMessage] });
 
       const res = await axios.post(
         "/api/chat",
-        { prompt: input },
+        { messages: [...history, userMessage] },
         { headers: { "Content-Type": "application/json" } }
       );
 
       console.log("✅ API Response:", res.data);
-      setResponse(res.data.reply);
+
+      // ✅ Append AI response to chat feed
+      const aiMessage = { role: "assistant", content: res.data.reply };
+      setHistory((prev) => [...prev, aiMessage]);
+
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        // Axios error handling
         console.error("❌ Chat API Error:", err.response?.data || err.message);
-        setError(
-          err.response?.data?.error ||
-            "Failed to get a response. Please try again."
-        );
+        setError(err.response?.data?.error || "Failed to get a response. Please try again.");
       } else {
-        // Non-Axios error (e.g., network issues, unknown errors)
         console.error("❌ Unexpected Error:", err);
         setError("An unexpected error occurred.");
       }
@@ -55,25 +74,30 @@ export default function Chat() {
 
   return (
     <div className={styles.wrapper}>
-      <Particles></Particles>
-      <Navbar></Navbar>
+      <Particles />
+      <Navbar />
 
-      {/* Main */}
-      <section className={`${styles.container} ${response ? styles.container__bottom : ''}`}>
-
-        {/* Intro */}
-        <div className={`${styles.container__intro} ${response ? styles.container__intro__hidden : ''}`}>
-          <Image src={Avatar} alt="Avatar"></Image>
-          <div>
-            <h1>No Resumes. No Guesswork.<br/>Just AI-Powered Answers.</h1>
-            <p>An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.</p>
+      <section className={`${styles.container} ${history.length > 0 ? styles.container__bottom : ''}`}>
+        {!introHidden && (
+          <div className={`${styles.container__intro} ${history.length > 0 ? styles.container__intro__hidden : ''}`}>
+            <Image src={Avatar} alt="Avatar" />
+            <div>
+              <h1>No Resumes. No Guesswork.<br />Just AI-Powered Answers.</h1>
+              <p>An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.</p>
+            </div>
           </div>
-        </div>
-
-        {/* Chat Feed */}
-        {response && (
-          <AIResponse>{response}</AIResponse>
         )}
+
+        {/* ✅ Chat Feed: Displays both User and AI Messages */}
+        <div className={styles.container__chat} ref={chatContainerRef}>
+          {history.map((msg, index) =>
+            msg.role === "user" ? (
+              <UserPrompt key={index}>{msg.content}</UserPrompt>
+            ) : (
+              <AIResponse key={index}>{msg.content}</AIResponse>
+            )
+          )}
+        </div>
 
         {error && <p className={styles.error}>{error}</p>}
 
@@ -91,7 +115,7 @@ export default function Chat() {
           </button>
         </form>
       </section>
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 }

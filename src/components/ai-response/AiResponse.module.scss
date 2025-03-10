@@ -1,0 +1,19 @@
+@use '../../styles/mixins/typography' as *;
+
+.container {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    max-width: 600px;
+
+    > svg {
+        width: var(--space-md);
+        height: var(--space-md);
+    }
+
+    > p {
+        flex: 1;
+        color: var(--color-gray-100);
+        @include body();
+    }
+}

@@ -8,6 +8,7 @@ import Avatar from "@/assets/images/Avatar.png";
 import Rocket from "@/assets/icons/rocket.svg";
 import Loader from "@/components/loader";
 import Particles from "@/components/particles";
+import AIResponse from "@/components/ai-response";
 
 export default function Chat() {
   const [input, setInput] = useState("");
@@ -71,30 +72,24 @@ export default function Chat() {
 
         {/* Chat Feed */}
         {response && (
-        <div className={styles.response}>
-          <p className={styles.responseTitle}>AI Response:</p>
-          <p className={styles.responseText}>{response}</p>
-        </div>
-      )}
+          <AIResponse>{response}</AIResponse>
+        )}
 
-      {error && <p className={styles.error}>{error}</p>}
+        {error && <p className={styles.error}>{error}</p>}
 
-      {/* Chat Form */}
-      <form onSubmit={handleSubmit} className={styles.form}>
-        {loading &&
-        <Loader text="GENERATING..." />
-        }
-
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask me anything about Kyle Holloway..."
-          disabled={loading}
-        />
-        <button type="submit" disabled={loading}>
-          <Rocket />
-        </button>
-      </form>
+        {/* Chat Form */}
+        <form onSubmit={handleSubmit} className={styles.form}>
+          {loading && <Loader text="GENERATING..." />}
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask me anything about Kyle Holloway..."
+            disabled={loading}
+          />
+          <button type="submit" disabled={loading}>
+            <Rocket />
+          </button>
+        </form>
       </section>
       <Footer></Footer>
     </div>

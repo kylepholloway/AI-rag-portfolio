@@ -2,17 +2,23 @@
 /// Brand Colors
 ////////////////////
 :root {
-
   // Base Colors
-  --color-light: #E0E3E9;
+  --color-light: #e0e3e9;
   --color-dark: #121417;
-  --color-primary: #FF6A00;
+  --color-primary: #ff6a00;
 
   // Grayscale
-  --color-gray-100: #AEB4C2;
-  --color-gray-200: #737A86;
-  --color-gray-400: #4A505C;
+  --color-gray-100: #aeb4c2;
+  --color-gray-200: #737a86;
+  --color-gray-400: #4a505c;
   --color-gray-600: #323741;
   --color-gray-800: #252930;
-  --color-gray-900: #1A1D22;
+  --color-gray-900: #1a1d22;
+
+  // Gradients
+  --gradient-bg: radial-gradient(
+    50% 50% at 50% 50%,
+    var(--color-gray-800, #252930) 0%,
+    var(--color-gray-900, #1a1d22) 100%
+  );
 }

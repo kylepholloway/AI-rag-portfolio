@@ -1,0 +1,21 @@
+  @use '../mixins/typography' as *;
+  
+  ////////////////////////
+  /// Headings and Paragraph Styles
+  ////////////////////////
+  
+  h1 { @include heading-1; }
+  h2 { @include heading-2; }
+  h3 { @include heading-3; }
+  h4 { @include heading-4; }
+  h5 { @include heading-5; }
+  h6 { @include heading-6; }
+  p { @include body; }
+
+
+////////////////////////
+/// Utility Classes for Smaller Sizes
+////////////////////////
+.font-size--sm { @include body('sm'); }
+.font-size--xs { @include body('xs'); }
+.font-size--alt { @include body('alt'); }

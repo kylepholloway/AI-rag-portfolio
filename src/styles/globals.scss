@@ -2,9 +2,11 @@
 /// Main Imports
 ////////////////////
 
+// Normalize
+@use '~normalize.css/normalize' as *;
+
 // Variables
 @use "variables/animations" as *;
-@use "variables/breakpoints" as *;
 @use "variables/colors" as *;
 @use "variables/fonts" as *;
 @use "variables/forms" as *;
@@ -12,6 +14,18 @@
 @use "variables/typography" as *;
 @use "variables/radius" as *;
 
+// Mixins
+@use "mixins/breakpoints" as *;
+@use "mixins/typography" as *;
+
+// Utilities
+@use "utilities/fonts" as *;
+@use "utilities/typography" as *;
+
 * {
     box-sizing: border-box;
+}
+
+body {
+    margin: 0;
 }

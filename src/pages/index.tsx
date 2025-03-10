@@ -1,5 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
+import styles from "./Home.module.scss";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import Image from "next/image";
+import Avatar from "@/assets/images/Avatar.png";
 
 export default function Chat() {
   const [input, setInput] = useState("");
@@ -30,7 +35,10 @@ export default function Chat() {
       if (axios.isAxiosError(err)) {
         // Axios error handling
         console.error("❌ Chat API Error:", err.response?.data || err.message);
-        setError(err.response?.data?.error || "Failed to get a response. Please try again.");
+        setError(
+          err.response?.data?.error ||
+            "Failed to get a response. Please try again."
+        );
       } else {
         // Non-Axios error (e.g., network issues, unknown errors)
         console.error("❌ Unexpected Error:", err);
@@ -42,37 +50,45 @@ export default function Chat() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-2xl font-semibold mb-4">Ask About Kyle</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-md flex gap-2">
+    <div className={styles.wrapper}>
+      <Navbar></Navbar>
+
+      {/* Main */}
+      <section className={styles.container}>
+        <div className={styles.container__intro}>
+          <Image src={Avatar} alt="Avatar"></Image>
+          <div>
+            <h1>No Resumes. No Guesswork.<br/>Just AI-Powered Answers.</h1>
+            <p>An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.</p>
+          </div>
+        </div>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <input
-          className="flex-1 p-2 border border-gray-300 rounded"
+          className={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question..."
           disabled={loading}
         />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-          disabled={loading}
-        >
+        <button type="submit" className={styles.button} disabled={loading}>
           {loading ? "Thinking..." : "Send"}
         </button>
       </form>
 
-      {loading && <p className="mt-4 text-gray-600">Processing your question...</p>}
+      {loading && (
+        <p className={styles.loading}>Processing your question...</p>
+      )}
 
       {response && (
-        <div className="mt-4 p-4 border border-gray-300 bg-white rounded max-w-md">
-          <p className="font-medium">AI Response:</p>
-          <p className="mt-2 text-gray-700">{response}</p>
+        <div className={styles.response}>
+          <p className={styles.responseTitle}>AI Response:</p>
+          <p className={styles.responseText}>{response}</p>
         </div>
       )}
 
-      {error && (
-        <p className="mt-4 text-red-600">{error}</p>
-      )}
+      {error && <p className={styles.error}>{error}</p>}
+      </section>
+      <Footer></Footer>
     </div>
   );
 }

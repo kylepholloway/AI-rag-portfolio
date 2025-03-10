@@ -1,0 +1,62 @@
+@use '../../styles/mixins/typography' as *;
+
+.container {
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    color: var(--color-gray-200);
+}
+
+.author {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+
+    &__name {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-gray-100);
+        @include heading-6('Alt');
+    }
+
+    &__title {
+        color: var(--color-gray-100);
+        @include body('Alt');
+    }
+
+    &__copyright {
+        @include body('Alt');
+    }
+}
+
+.sources {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    align-items: flex-end;
+    @include body('Alt');
+
+    ul {
+        display: flex;
+        gap: var(--space-md);
+        list-style-type: none;
+        color: var(--color-gray-100);
+        margin: 0;
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+
+        }
+    }
+
+    p {
+        @include body('Alt');
+    }
+}

@@ -1,0 +1,106 @@
+////////////////////////
+/// Heading Mixins
+////////////////////////
+@mixin heading-1($variant: "") {
+  font-family: if(
+    $variant == "Alt",
+    var(--font-family-secondary),
+    var(--font-family-primary)
+  );
+  font-size: var(--font-size-4xl);
+  font-weight: if(
+    $variant == "Alt",
+    500,
+    600
+  );
+}
+
+@mixin heading-2($variant: "") {
+  font-family: if(
+    $variant == "Alt",
+    var(--font-family-secondary),
+    var(--font-family-primary)
+  );
+  font-size: var(--font-size-3xl);
+  font-weight: if(
+    $variant == "Alt",
+    500,
+    600
+  );
+}
+
+@mixin heading-3($variant: "") {
+  font-family: if(
+    $variant == "Alt",
+    var(--font-family-secondary),
+    var(--font-family-primary)
+  );
+  font-size: var(--font-size-2xl);
+  font-weight: if(
+    $variant == "Alt",
+    500,
+    600
+  );
+}
+
+@mixin heading-4($variant: "") {
+  font-family: if(
+    $variant == "Alt",
+    var(--font-family-secondary),
+    var(--font-family-primary)
+  );
+  font-size: var(--font-size-xl);
+  font-weight: if(
+    $variant == "Alt",
+    500,
+    600
+  );
+}
+
+@mixin heading-5($variant: "") {
+  font-family: if(
+    $variant == "Alt",
+    var(--font-family-secondary),
+    var(--font-family-primary)
+  );
+  font-size: var(--font-size-lg);
+  font-weight: if(
+    $variant == "Alt",
+    400,
+    500
+  );
+}
+
+@mixin heading-6($variant: "") {
+  font-family: if(
+    $variant == "Alt",
+    var(--font-family-secondary),
+    var(--font-family-primary)
+  );
+  font-size: var(--font-size-md);
+  font-weight: if(
+    $variant == "Alt",
+    400,
+    500
+  );
+}
+
+////////////////////////
+/// Paragraph Mixin
+////////////////////////
+@mixin body($variant: "") {
+  @if $variant == "Alt" {
+    font-family: var(--font-family-tertiary);
+    font-size: var(--font-size-sm);
+  } @else {
+    font-family: var(--font-family-primary);
+    font-size: if(
+      $variant == "sm",
+      var(--font-size-sm),
+      if($variant == "xs", var(--font-size-xs), var(--font-size-base))
+    );
+  }
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+}

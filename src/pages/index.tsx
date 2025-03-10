@@ -59,10 +59,10 @@ export default function Chat() {
       <Navbar></Navbar>
 
       {/* Main */}
-      <section className={styles.container}>
+      <section className={`${styles.container} ${response ? styles.container__bottom : ''}`}>
 
         {/* Intro */}
-        <div className={styles.container__intro}>
+        <div className={`${styles.container__intro} ${response ? styles.container__intro__hidden : ''}`}>
           <Image src={Avatar} alt="Avatar"></Image>
           <div>
             <h1>No Resumes. No Guesswork.<br/>Just AI-Powered Answers.</h1>

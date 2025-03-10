@@ -5,14 +5,12 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import Image from "next/image";
 import Avatar from "@/assets/images/Avatar.png";
-import Rocket from "@/assets/icons/rocket.svg";
-import Loader from "@/components/loader";
 import Particles from "@/components/particles";
 import AIResponse from "@/components/ai-response";
 import UserPrompt from "@/components/user-prompt";
+import AIForm from "@/components/ai-form";
 
 export default function Chat() {
-  const [input, setInput] = useState("");
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,7 +19,7 @@ export default function Chat() {
 
   useEffect(() => {
     if (history.length > 0) {
-      const timer = setTimeout(() => setIntroHidden(true), 500); // Match the CSS transition duration
+      const timer = setTimeout(() => setIntroHidden(true), 500);
       return () => clearTimeout(timer);
     }
   }, [history]);
@@ -32,44 +30,8 @@ export default function Chat() {
     }
   }, [history]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    setLoading(true);
-    setError("");
-
-    const userMessage = { role: "user", content: input };
-    setHistory((prev) => [...prev, userMessage]); // ✅ Display user input instantly
-
-    setInput("");
-
-    try {
-      console.log("🔹 Sending Request to API:", { messages: [...history, userMessage] });
-
-      const res = await axios.post(
-        "/api/chat",
-        { messages: [...history, userMessage] },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      console.log("✅ API Response:", res.data);
-
-      // ✅ Append AI response to chat feed
-      const aiMessage = { role: "assistant", content: res.data.reply };
-      setHistory((prev) => [...prev, aiMessage]);
-
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        console.error("❌ Chat API Error:", err.response?.data || err.message);
-        setError(err.response?.data?.error || "Failed to get a response. Please try again.");
-      } else {
-        console.error("❌ Unexpected Error:", err);
-        setError("An unexpected error occurred.");
-      }
-    } finally {
-      setLoading(false);
-    }
+  const handleNewMessage = (message: { role: string; content: string }) => {
+    setHistory((prev) => [...prev, message]);
   };
 
   return (
@@ -102,18 +64,12 @@ export default function Chat() {
         {error && <p className={styles.error}>{error}</p>}
 
         {/* Chat Form */}
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {loading && <Loader text="GENERATING..." />}
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me anything about Kyle Holloway..."
-            disabled={loading}
-          />
-          <button type="submit" disabled={loading}>
-            <Rocket />
-          </button>
-        </form>
+        <AIForm
+          onNewMessage={handleNewMessage}
+          setError={setError}
+          loading={loading}
+          setLoading={setLoading}
+        />
       </section>
       <Footer />
     </div>

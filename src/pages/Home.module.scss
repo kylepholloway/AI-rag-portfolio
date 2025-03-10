@@ -77,7 +77,7 @@
         width: 100%;
 
         &::-webkit-scrollbar {
-            width: 0;
+            width: var(--space-xs);
             position: absolute;
             right: 0;
             transition: var(--transition-basic);
@@ -95,12 +95,6 @@
 
         &::-webkit-scrollbar-thumb:hover {
             background-color: var(--color-primary-dark);
-        }
-
-        &:hover {
-            &::-webkit-scrollbar {
-                width: var(--space-xs);
-            }
         }
     }
 }

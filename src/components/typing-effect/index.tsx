@@ -9,6 +9,7 @@ interface TypingEffectProps {
 const TypingEffect: React.FC<TypingEffectProps> = ({ text, isActive }) => {
   const [displayedText, setDisplayedText] = useState("");
   const indexRef = useRef(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isActive) {
@@ -32,8 +33,15 @@ const TypingEffect: React.FC<TypingEffectProps> = ({ text, isActive }) => {
     return () => setDisplayedText(text);
   }, [text, isActive]);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [displayedText]);
+
   return (
     <motion.span
+      ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}

@@ -1,16 +1,21 @@
-import { storeEmbedding } from "../../src/utils/storeData";
+import { storeEmbedding } from "../../src/utils/storeEmbedding";
 
 export async function seedProjects() {
   const projects = [
     {
       category: "Projects",
-      title: "Nessi Fishing Supply",
-      content: "Built an AI-driven marketplace for custom fishing gear using Next.js and AWS."
+      title: "Quick Service Restaurants (QSR)",
+      content: "Wingstop, Raising Cane’s, Panda Express, Denny’s, Red Robin, Peet’s Coffee, Blaze Pizza, Qdoba, California Pizza Kitchen, Cheesecake Factory, Carl’s Jr & Hardee’s, Noodles & Company."
     },
     {
       category: "Projects",
-      title: "AI Portfolio Chatbot",
-      content: "Developed an AI-powered resume assistant using RAG and PostgreSQL."
+      title: "Non-Profits",
+      content: "Focus on the Family, The Rockefeller Foundation, World Challenge, Ark Encounter, BigLife, Home to Home."
+    },
+    {
+      category: "Projects",
+      title: "Tech & Enterprise",
+      content: "RE/MAX, BleacherReport, DynaEnergetics, FORM Technologies, Gigaphoton."
     }
   ];
 

@@ -1,11 +1,11 @@
-import { storeEmbedding } from "../../src/utils/storeData";
+import { storeEmbedding } from "../../src/utils/storeEmbedding";
 
 export async function seedSkills() {
   const skills = [
     {
       category: "Skills",
       title: "Frontend Development & Design Systems",
-      content: "Angular, React, Next.js, Gatsby, Ionic, TypeScript, JavaScript (ES6+), Redux, Storybook, Atomic Design Systems, Scalable Component Libraries, Systematic UI Architecture, Design Tokens, Web Performance Optimization."
+      content: "JavaScript, TypeScript, Angular, React, Next.js, Gatsby, Ionic, Redux, Storybook, Atomic Design Systems, Scalable Component Libraries, Systematic UI Architecture, Design Tokens, Web Performance Optimization."
     },
     {
       category: "Skills",
@@ -15,7 +15,7 @@ export async function seedSkills() {
     {
       category: "Skills",
       title: "AI & Automation Tools",
-      content: "Custom GPT for Development Ticketing, RAG Architecture, GitHub Copilot, ChatGPT, AI-driven Unit Testing, Storybook Story Generation, AI-based Linting, ADA Compliance Automation."
+      content: "Custom GPT for Development Ticketing, RAG Architecture, GitHub Copilot, ChatGPT, AI-driven Unit Testing, Storybook Story Generation, AI-based Linting, ADA Compliance Automation, Motion (AI Task & Calendar Management), Fireflies AI (Meeting Summaries & Action Items)."
     },
     {
       category: "Skills",
@@ -24,8 +24,18 @@ export async function seedSkills() {
     },
     {
       category: "Skills",
+      title: "Headless CMS & Content Management",
+      content: "PayloadCMS, Contentful, ContentStack, WordPress."
+    },
+    {
+      category: "Skills",
       title: "Design & Product Strategy",
-      content: "Figma, Adobe Suite (Photoshop, Illustrator, XD), UI/UX, Product Design, User Research, Accessibility (WCAG Compliance), Brand Strategy."
+      content: "Figma, Adobe Suite, UI/UX, Product Design, User Research, Accessibility (WCAG Compliance), Brand Strategy."
+    },
+    {
+      category: "Skills",
+      title: "Business & Leadership",
+      content: "Sales & Client Pitches, Securing New Business, Hiring, Mentoring, Career Progression, Cross-Department Collaboration, Agile, Lean UX, Scrum, Roadmapping, Stakeholder Management."
     }
   ];
 

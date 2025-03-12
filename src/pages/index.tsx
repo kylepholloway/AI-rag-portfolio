@@ -16,7 +16,10 @@ export default function Chat() {
   // Ensure the chat feed always scrolls to the latest message
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      const lastMessage = chatContainerRef.current.lastElementChild;
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: "smooth" });
+      }
     }
   }, [history]);
 

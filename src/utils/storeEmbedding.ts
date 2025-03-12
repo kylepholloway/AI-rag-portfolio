@@ -20,17 +20,19 @@ export async function storeEmbedding(category: string, title: string, content: s
 
     console.log(`🧠 Generated Embedding (${embedding.length} dimensions)`);
 
-    // ✅ Insert data using raw SQL because Prisma doesn't support `vector`
+    // ✅ Use UPSERT to update if the title exists, otherwise insert a new record
     await prisma.$executeRawUnsafe(
-      `INSERT INTO "KnowledgeBase" (id, category, title, content, embedding, "createdAt") 
-       VALUES (gen_random_uuid(), $1, $2, $3, $4::vector, NOW())`,
+      `INSERT INTO "KnowledgeBase" (id, category, title, content, embedding, "createdAt")
+       VALUES (gen_random_uuid(), $1, $2, $3, $4::vector, NOW())
+       ON CONFLICT (title) DO UPDATE 
+       SET category = $1, content = $3, embedding = $4::vector, "createdAt" = NOW()`,
       category,
       title,
       content,
       embedding
     );
 
-    console.log(`✅ Stored embedding for "${title}" in category "${category}"`);
+    console.log(`✅ Upserted embedding for "${title}" in category "${category}"`);
 
   } catch (error) {
     console.error("❌ Error storing embedding:", error);

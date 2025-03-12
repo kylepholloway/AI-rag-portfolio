@@ -4,12 +4,13 @@ import Rocket from "@/assets/icons/rocket.svg";
 
 interface AIFormProps {
   onNewMessage: (message: { role: string; content: string }) => void;
-  setError: Dispatch<SetStateAction<string>>; // ✅ Added
+  setError: Dispatch<SetStateAction<string>>;
   loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>; // ✅ Added
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  isActive: boolean;
 }
 
-const AIForm: React.FC<AIFormProps> = ({ onNewMessage, setError, loading, setLoading }) => {
+const AIForm: React.FC<AIFormProps> = ({ onNewMessage, setError, loading, setLoading, isActive }) => {
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -17,15 +18,15 @@ const AIForm: React.FC<AIFormProps> = ({ onNewMessage, setError, loading, setLoa
     if (!input.trim()) return;
 
     setLoading(true);
-    setError(""); // ✅ Reset error when sending a new message
+    setError("");
 
     const userMessage = { role: "user", content: input };
     onNewMessage(userMessage);
-    setInput(""); // ✅ Clear input after sending
+    setInput("");
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={isActive ? "active" : ""}>
       {loading && <Loader text="GENERATING..." />}
       <input
         value={input}

@@ -111,6 +111,7 @@ export default function Chat() {
           setError={setError}
           loading={loading}
           setLoading={setLoading}
+          isActive={history.length > 0}
         />
       </section>
     </div>

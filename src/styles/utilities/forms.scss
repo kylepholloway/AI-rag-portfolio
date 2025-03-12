@@ -14,7 +14,7 @@ form {
         color: var(--color-light);
         border: 1px solid var(--color-gray-400);
         border-radius: var(--radius-2xl);
-        padding: var(--space-base) var(--space-md);
+        padding: var(--space-base) var(--space-2xl) var(--space-base) var(--space-md);
         transition: var(--transition-basic);
         @include body();
 

@@ -21,6 +21,8 @@ export default function Chat() {
 
   const sendMessageToAI = async (messages: { role: string; content: string }[]) => {
     setLoading(true);
+    setError(""); // ✅ Clear error when sending a message
+  
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -28,15 +30,17 @@ export default function Chat() {
         body: JSON.stringify({ messages }),
       });
       const data = await response.json();
-      
+  
       // ✅ Append AI response after user message
       setHistory((prev) => [...prev, { role: "assistant", content: data.reply }]);
-    } catch (error) {
+    } catch (err) { // ✅ Ensure proper error handling
+      console.error("❌ AI Fetch Error:", err);
       setError("Failed to fetch response from AI.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleNewMessage = (message: { role: string; content: string }) => {
     setHistory((prev) => {

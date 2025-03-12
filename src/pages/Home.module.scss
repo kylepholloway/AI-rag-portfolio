@@ -14,55 +14,32 @@
     background: var(--gradient-bg);
     flex: 1;
     z-index: 1;
+    padding: var(--space-3xl);
+    transition: var(--transition-basic);
     overflow: hidden;
 
-    &__stream {
-        max-width: 600px;
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 400px;
+        background: linear-gradient(180deg, var(--color-gray-900) 20%, rgba(37, 41, 48, 0.00) 100%);
+        z-index: 2;
     }
 
     &__bottom {
         justify-content: flex-end;
-        transition: justify-content 0.5s ease;
     }
 
-    &__intro {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: var(--space-2xl);
-
-        > div {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-base);
-            margin-bottom: var(--space-2xl);
-            max-width: 500px;
-
-            > h1 {
-                margin: 0;
-                text-align: center;
-                color: var(--color-gray-100);
-                @include heading-4('Alt');
-            }
-
-            > p {
-                text-align: center;
-                color: var(--color-light);
-                @include body();
-            }
-        }
-    }
-
-    &__chat {
+    &__feed {
         position: relative;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
-        align-self: flex-end;
-        padding: 0 var(--space-base);
-        width: 100%;
+        padding: var(--space-3xl) var(--space-xs) 0 var(--space-base);
+        width: 600px;
 
         &::-webkit-scrollbar {
             width: var(--space-xs);
@@ -83,6 +60,29 @@
 
         &::-webkit-scrollbar-thumb:hover {
             background-color: var(--color-primary-dark);
+        }
+    }
+
+    &__intro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-base);
+        margin: 0 auto var(--space-2xl) auto;
+        max-width: 500px;
+
+        > h1 {
+            margin: 0;
+            text-align: center;
+            color: var(--color-gray-100);
+            @include heading-4('Alt');
+        }
+
+        > p {
+            text-align: center;
+            color: var(--color-light);
+            @include body();
         }
     }
 }

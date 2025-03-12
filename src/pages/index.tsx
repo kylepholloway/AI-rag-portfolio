@@ -11,15 +11,7 @@ export default function Chat() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [introHidden, setIntroHidden] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (history.length > 0) {
-      const timer = setTimeout(() => setIntroHidden(true), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [history]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -41,46 +33,37 @@ export default function Chat() {
           history.length > 0 ? styles.container__bottom : ""
         }`}
       >
-        <div className={styles.container__stream}>
-          {!introHidden && (
-            <div
-              className={styles.container__intro}
-            >
-              <div>
-                <h1>
-                  No Resumes. No Guesswork.
-                  <br />
-                  Just AI-Powered Answers.
-                </h1>
-                <p>
-                  An interactive AI portfolio that delivers instant insights
-                  into my work, leadership, and expertise—just ask.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* ✅ Chat Feed: Displays both User and AI Messages */}
-          <div className={styles.container__chat} ref={chatContainerRef}>
-            {history.map((msg, index) =>
-              msg.role === "user" ? (
-                <UserPrompt key={index}>{msg.content}</UserPrompt>
-              ) : (
-                <AIResponse key={index}>{msg.content}</AIResponse>
-              )
-            )}
+        <div className={styles.container__feed} ref={chatContainerRef}>
+          <div className={styles.container__intro}>
+            <h1>
+              No Resumes. No Guesswork.
+              <br />
+              Just AI-Powered Answers.
+            </h1>
+            <p>
+              An interactive AI portfolio that delivers instant insights into
+              my work, leadership, and expertise—just ask.
+            </p>
           </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+          {/* ✅ Chat Feed: Displays both User and AI Messages */}
+          {history.map((msg, index) =>
+            msg.role === "user" ? (
+              <UserPrompt key={index}>{msg.content}</UserPrompt>
+            ) : (
+              <AIResponse key={index}>{msg.content}</AIResponse>
+            )
+          )}
 
-          {/* Chat Form */}
-          <AIForm
-            onNewMessage={handleNewMessage}
-            setError={setError}
-            loading={loading}
-            setLoading={setLoading}
-          />
+          {error && <p className={styles.error}>{error}</p>}
         </div>
+        {/* Chat Form */}
+        <AIForm
+          onNewMessage={handleNewMessage}
+          setError={setError}
+          loading={loading}
+          setLoading={setLoading}
+        />
       </section>
     </div>
   );

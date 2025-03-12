@@ -9,7 +9,7 @@ interface AIResponseProps {
 const AIResponse: React.FC<AIResponseProps> = ({ children }) => {
   return (
     <div className={`${styles.container} ${styles.assistant}`}>
-      <Robot className={styles.icon} />
+      <Robot />
       <p className={styles.text}>{children}</p>
     </div>
   );

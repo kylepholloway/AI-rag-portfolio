@@ -1,55 +1,27 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, Dispatch, SetStateAction } from "react";
 import Loader from "@/components/loader";
 import Rocket from "@/assets/icons/rocket.svg";
 
 interface AIFormProps {
   onNewMessage: (message: { role: string; content: string }) => void;
-  setError: (error: string) => void;
+  setError: Dispatch<SetStateAction<string>>; // ✅ Added
   loading: boolean;
-  setLoading: (loading: boolean) => void;
+  setLoading: Dispatch<SetStateAction<boolean>>; // ✅ Added
 }
 
 const AIForm: React.FC<AIFormProps> = ({ onNewMessage, setError, loading, setLoading }) => {
   const [input, setInput] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     setLoading(true);
-    setError("");
+    setError(""); // ✅ Reset error when sending a new message
 
     const userMessage = { role: "user", content: input };
     onNewMessage(userMessage);
-
-    setInput("");
-
-    try {
-      console.log("🔹 Sending Request to API:", { messages: [userMessage] });
-
-      const res = await axios.post(
-        "/api/chat",
-        { messages: [userMessage] },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      console.log("✅ API Response:", res.data);
-
-      const aiMessage = { role: "assistant", content: res.data.reply };
-      onNewMessage(aiMessage);
-
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        console.error("❌ Chat API Error:", err.response?.data || err.message);
-        setError(err.response?.data?.error || "Failed to get a response. Please try again.");
-      } else {
-        console.error("❌ Unexpected Error:", err);
-        setError("An unexpected error occurred.");
-      }
-    } finally {
-      setLoading(false);
-    }
+    setInput(""); // ✅ Clear input after sending
   };
 
   return (

@@ -5,6 +5,7 @@ import AIResponse from "@/components/ai-response";
 import UserPrompt from "@/components/user-prompt";
 import AIForm from "@/components/ai-form";
 import TypingEffect from "@/components/typing-effect";
+import Head from 'next/head';
 
 export default function Chat() {
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
@@ -69,55 +70,60 @@ export default function Chat() {
   ];
 
   return (
-    <div className={styles.wrapper}>
-      <Navbar />
-      <section className={`${styles.container} ${history.length > 0 ? styles.container__bottom : ""}`}>
-        <div className={styles.container__feed} ref={chatContainerRef}>
-          <div className={styles.container__intro}>
-            <h1>
-              No Resumes. No Guesswork.
-              <br />
-              Just AI-Powered Answers.
-            </h1>
-            <p>
-              An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.
-            </p>
+    <>
+      <Head>
+        <title>Kyle Holloway&apos;s AI-Powered Portfolio</title>
+      </Head>
+      <div className={styles.wrapper}>
+        <Navbar />
+        <section className={`${styles.container} ${history.length > 0 ? styles.container__bottom : ""}`}>
+          <div className={styles.container__feed} ref={chatContainerRef}>
+            <div className={styles.container__intro}>
+              <h1>
+                No Resumes. No Guesswork.
+                <br />
+                Just AI-Powered Answers.
+              </h1>
+              <p>
+                An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.
+              </p>
+            </div>
+
+            {/* ✅ Display prompt buttons if no chat history */}
+            {history.length === 0 && (
+              <div className={styles.container__prompts}>
+                {prompts.map((prompt, index) => (
+                  <button key={index} onClick={() => handlePromptClick(prompt)} disabled={loading}>
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* ✅ Display user and AI messages */}
+            {history.map((msg, index) =>
+              msg.role === "user" ? (
+                <UserPrompt key={index}>{msg.content}</UserPrompt>
+              ) : (
+                <AIResponse key={index}>
+                  <TypingEffect text={msg.content} isActive={index === history.length - 1} />
+                </AIResponse>
+              )
+            )}
+
+            {error && <p className={styles.error}>{error}</p>}
           </div>
 
-          {/* ✅ Display prompt buttons if no chat history */}
-          {history.length === 0 && (
-            <div className={styles.container__prompts}>
-              {prompts.map((prompt, index) => (
-                <button key={index} onClick={() => handlePromptClick(prompt)} disabled={loading}>
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* ✅ Display user and AI messages */}
-          {history.map((msg, index) =>
-            msg.role === "user" ? (
-              <UserPrompt key={index}>{msg.content}</UserPrompt>
-            ) : (
-              <AIResponse key={index}>
-                <TypingEffect text={msg.content} isActive={index === history.length - 1} />
-              </AIResponse>
-            )
-          )}
-
-          {error && <p className={styles.error}>{error}</p>}
-        </div>
-
-        {/* ✅ Chat Form */}
-        <AIForm
-          onNewMessage={handleNewMessage}
-          setError={setError}
-          loading={loading}
-          setLoading={setLoading}
-          isActive={history.length > 0}
-        />
-      </section>
-    </div>
+          {/* ✅ Chat Form */}
+          <AIForm
+            onNewMessage={handleNewMessage}
+            setError={setError}
+            loading={loading}
+            setLoading={setLoading}
+            isActive={history.length > 0}
+          />
+        </section>
+      </div>
+    </>
   );
 }

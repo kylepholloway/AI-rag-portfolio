@@ -1,16 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./Home.module.scss";
 import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
-import Image from "next/image";
-import Avatar from "@/assets/images/Avatar.png";
-import Particles from "@/components/particles";
 import AIResponse from "@/components/ai-response";
 import UserPrompt from "@/components/user-prompt";
 import AIForm from "@/components/ai-form";
 
 export default function Chat() {
-  const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
+  const [history, setHistory] = useState<{ role: string; content: string }[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [introHidden, setIntroHidden] = useState(false);
@@ -25,7 +23,8 @@ export default function Chat() {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [history]);
 
@@ -35,42 +34,54 @@ export default function Chat() {
 
   return (
     <div className={styles.wrapper}>
-      <Particles />
       <Navbar />
 
-      <section className={`${styles.container} ${history.length > 0 ? styles.container__bottom : ''}`}>
-        {!introHidden && (
-          <div className={`${styles.container__intro} ${history.length > 0 ? styles.container__intro__hidden : ''}`}>
-            <Image src={Avatar} alt="Avatar" />
-            <div>
-              <h1>No Resumes. No Guesswork.<br />Just AI-Powered Answers.</h1>
-              <p>An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.</p>
+      <section
+        className={`${styles.container} ${
+          history.length > 0 ? styles.container__bottom : ""
+        }`}
+      >
+        <div className={styles.container__stream}>
+          {!introHidden && (
+            <div
+              className={styles.container__intro}
+            >
+              <div>
+                <h1>
+                  No Resumes. No Guesswork.
+                  <br />
+                  Just AI-Powered Answers.
+                </h1>
+                <p>
+                  An interactive AI portfolio that delivers instant insights
+                  into my work, leadership, and expertise—just ask.
+                </p>
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* ✅ Chat Feed: Displays both User and AI Messages */}
-        <div className={styles.container__chat} ref={chatContainerRef}>
-          {history.map((msg, index) =>
-            msg.role === "user" ? (
-              <UserPrompt key={index}>{msg.content}</UserPrompt>
-            ) : (
-              <AIResponse key={index}>{msg.content}</AIResponse>
-            )
           )}
+
+          {/* ✅ Chat Feed: Displays both User and AI Messages */}
+          <div className={styles.container__chat} ref={chatContainerRef}>
+            {history.map((msg, index) =>
+              msg.role === "user" ? (
+                <UserPrompt key={index}>{msg.content}</UserPrompt>
+              ) : (
+                <AIResponse key={index}>{msg.content}</AIResponse>
+              )
+            )}
+          </div>
+
+          {error && <p className={styles.error}>{error}</p>}
+
+          {/* Chat Form */}
+          <AIForm
+            onNewMessage={handleNewMessage}
+            setError={setError}
+            loading={loading}
+            setLoading={setLoading}
+          />
         </div>
-
-        {error && <p className={styles.error}>{error}</p>}
-
-        {/* Chat Form */}
-        <AIForm
-          onNewMessage={handleNewMessage}
-          setError={setError}
-          loading={loading}
-          setLoading={setLoading}
-        />
       </section>
-      <Footer />
     </div>
   );
 }

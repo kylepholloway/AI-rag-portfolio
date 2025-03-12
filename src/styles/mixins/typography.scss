@@ -69,6 +69,7 @@
     400,
     500
   );
+  line-height: var(--space-lg);
 }
 
 @mixin heading-6($variant: "") {

@@ -71,7 +71,30 @@ export default function Chat() {
     "What are Kyle's strengths and weaknesses?",
     "What are Kyle's most notable projects?",
     "What is Kyle's work experience?",
+    "What are Kyle's technical skills?",
+    "What are Kyle's educational qualifications?",
+    "What are Kyle's hobbies and interests?",
+    "What awards has Kyle received?",
+    "What is Kyle's approach to problem-solving?",
+    "What are Kyle's future goals?",
+    "How does Kyle handle team projects?",
+    "What is Kyle's leadership style?",
+    "What are Kyle's contributions to open-source projects?",
   ];
+
+  // Function to get random prompts based on device type
+  const getRandomPrompts = () => {
+    const isMobile = window.innerWidth < 768;
+    const promptCount = isMobile ? 2 : 3;
+    const shuffledPrompts = prompts.sort(() => 0.5 - Math.random());
+    return shuffledPrompts.slice(0, promptCount);
+  };
+
+  const [randomPrompts, setRandomPrompts] = useState<string[]>([]);
+
+  useEffect(() => {
+    setRandomPrompts(getRandomPrompts());
+  }, []);
 
   return (
     <>
@@ -99,7 +122,7 @@ export default function Chat() {
             {/* ✅ Display prompt buttons if no chat history */}
             {history.length === 0 && (
               <div className={styles.container__prompts}>
-                {prompts.map((prompt, index) => (
+                {randomPrompts.map((prompt, index) => (
                   <button key={index} onClick={() => handlePromptClick(prompt)} disabled={loading}>
                     {prompt}
                   </button>

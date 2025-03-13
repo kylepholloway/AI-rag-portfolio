@@ -48,8 +48,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         embedding
       );
     } catch (dbError) {
+      console.error("❌ Database Query Failed:", dbError); // ✅ Now dbError is used
       return res.status(500).json({ error: "Database query failed." });
     }
+
 
     const context = results
       .map((entry) => `Title: ${entry.title}\nContent: ${entry.content}`)

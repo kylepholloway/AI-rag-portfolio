@@ -1,14 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./MobileMenu.module.scss";
 import Navbar from "../navbar";
 import Logo from "@/assets/logos/Logo.svg";
 
 const MobileMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [shouldRenderNavbar, setShouldRenderNavbar] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    if (isOpen) {
+      setIsFadingOut(true);
+      setTimeout(() => {
+        setIsOpen(false);
+        setShouldRenderNavbar(false);
+        setIsFadingOut(false);
+      }, 300);
+    } else {
+      setShouldRenderNavbar(true);
+      setIsOpen(true);
+    }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsFadingOut(false);
+    }
+  }, [isOpen]);
 
   return (
     <div>
@@ -16,13 +34,13 @@ const MobileMenu: React.FC = () => {
         <div className={styles.logo}>
           <Logo />
         </div>
-        <div className={`${styles.hamburger} ${isOpen ? "open" : ""}`} onClick={toggleMenu}>
-          <span className={isOpen ? "open" : ""}></span>
-          <span className={isOpen ? "open" : ""}></span>
-          <span className={isOpen ? "open" : ""}></span>
+        <div className={`${styles.hamburger} ${isOpen && !isFadingOut ? styles.open : ""}`} onClick={toggleMenu}>
+          <span className={isOpen && !isFadingOut ? styles.open : ""}></span>
+          <span className={isOpen && !isFadingOut ? styles.open : ""}></span>
+          <span className={isOpen && !isFadingOut ? styles.open : ""}></span>
         </div>
       </div>
-      {isOpen && <Navbar />}
+      {shouldRenderNavbar && <Navbar isFadingOut={isFadingOut} />}
     </div>
   );
 };

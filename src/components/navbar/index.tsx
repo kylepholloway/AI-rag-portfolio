@@ -1,15 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Navbar.module.scss";
 import Linkedin from "@/assets/icons/linkedin.svg";
 import Figma from "@/assets/icons/figma.svg";
 import Github from "@/assets/icons/github.svg";
 import HashPattern from "@/components/hash-pattern";
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  isFadingOut?: boolean;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ isFadingOut }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+    return () => setIsVisible(false);
+  }, []);
+
   const currentYear = new Date().getFullYear();
 
   return (
-    <nav className={styles.container}>
+    <nav className={`${styles.container} ${isVisible ? styles.fadeIn : ''} ${isFadingOut ? styles.fadeOut : ''}`}>
       <div className={styles.author}>
         <div className={styles.author__name}>
           <p>Kyle P. Holloway</p>

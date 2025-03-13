@@ -84,6 +84,7 @@
     400,
     500
   );
+  line-height: if($variant == "Alt", 28px, normal);
 }
 
 ////////////////////////
@@ -100,7 +101,7 @@
       var(--font-size-sm),
       if($variant == "xs", var(--font-size-xs), var(--font-size-base))
     );
-    line-height: if($variant == "sm", 20px, 24px); // Adjust line-height for "sm" variant
+    line-height: if($variant == "sm", 20px, 24px);
   }
   font-weight: 400;
   margin: 0;

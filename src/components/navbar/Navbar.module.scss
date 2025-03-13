@@ -79,7 +79,7 @@
     &__title {
         text-align: center;
         color: var(--color-gray-200);
-        @include heading-5('Alt');
+        @include heading-6('Alt');
     }
 
     &__subtitle {
@@ -92,7 +92,6 @@
         display: flex;
         flex-direction: column;
         list-style-type: none;
-        color: var(--color-gray-100);
         padding: 0;
         width: 100%;
         margin: 0;
@@ -105,7 +104,10 @@
             padding: var(--space-base);
             border-bottom: 1px solid var(--color-gray-600);
             gap: var(--space-xs);
+            color: var(--color-gray-100);
+            text-decoration: none;
             transition: var(--transition-basic);
+
             cursor: pointer;
             @include body('Alt');
 

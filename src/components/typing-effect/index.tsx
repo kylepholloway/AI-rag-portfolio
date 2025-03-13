@@ -25,7 +25,7 @@ const TypingEffect: React.FC<TypingEffectProps> = ({ text, isActive }) => {
         accumulatedText += text[indexRef.current];
         setDisplayedText(formatText(accumulatedText));
         indexRef.current++;
-        setTimeout(typeCharacter, 30);
+        setTimeout(typeCharacter, 15);
       }
     };
 

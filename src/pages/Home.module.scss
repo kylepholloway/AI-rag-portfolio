@@ -34,7 +34,7 @@
     @include breakpoint(md) {
         height: unset;
         justify-content: center;
-        padding: var(--space-3xl);
+        padding: 0 var(--space-3xl) var(--space-3xl);
     }
 
     &::after {
@@ -45,7 +45,7 @@
         right: 0;
         bottom: 0;
         height: 150px;
-        background: linear-gradient(180deg, var(--color-gray-900) 20%, rgba(37, 41, 48, 0.00) 100%);
+        background: linear-gradient(180deg, rgba(26, 29, 34, 0.95) 20%, rgba(37, 41, 48, 0.00) 100%);
         z-index: 2;
         @include breakpoint(md) {
             height: 400px;
@@ -63,7 +63,7 @@
         padding: 0 var(--space-sm) var(--space-sm);
         @include breakpoint(lg) {
             width: 600px;
-            padding: var(--space-3xl) var(--space-xs) 0 var(--space-base);
+            padding: 0 var(--space-xs) 0 var(--space-base);
         }
 
         &::-webkit-scrollbar {

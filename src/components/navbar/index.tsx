@@ -34,23 +34,23 @@ const Navbar: React.FC<NavbarProps> = ({ isFadingOut }) => {
       <div className={styles.links}>
         <div className={styles.links__header}>
           <p className={styles.links__title}>Open, transparent,<br />and intentionally accessible.</p>
-          <p className={styles.links__subtitle}>Explore the design, development, and system architecture.</p>
+          <p className={styles.links__subtitle}>From concept to code—see how this portfolio was built.</p>
         </div>
         <ul>
           <li>
-            <a>
+            <a href="https://www.figma.com/design/ccFGZIjSpfmvduTvvGB7ZO/Design-System?node-id=0-1&p=f&t=ZIW6tKdKWObAxl1p-0" target="_blank">
               <Figma />
               Design System
             </a>
           </li>
           <li>
-            <a>
+            <a href="https://github.com/kylepholloway/AI-rag-portfolio" target="_blank">
               <Github />
               Source Code
             </a>
           </li>
           <li>
-            <a>
+            <a href="https://www.figma.com/board/gTpyLSNGuhHcX26GE3mL7H/System-Diagram?node-id=0-1&p=f&t=FT5Zx2kkQRFpd9cQ-0" target="_blank">
               <Figma />
               System Diagram
             </a>

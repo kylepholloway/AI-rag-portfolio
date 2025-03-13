@@ -5,11 +5,13 @@ import AIResponse from "@/components/ai-response";
 import UserPrompt from "@/components/user-prompt";
 import AIForm from "@/components/ai-form";
 import TypingEffect from "@/components/typing-effect";
-import Head from 'next/head';
+import Head from "next/head";
 import MobileMenu from "@/components/mobile-menu";
 
 export default function Chat() {
-  const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
+  const [history, setHistory] = useState<{ role: string; content: string }[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -24,10 +26,12 @@ export default function Chat() {
     }
   }, [history]);
 
-  const sendMessageToAI = async (messages: { role: string; content: string }[]) => {
+  const sendMessageToAI = async (
+    messages: { role: string; content: string }[]
+  ) => {
     setLoading(true);
     setError(""); // ✅ Clear error when sending a message
-  
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -35,17 +39,20 @@ export default function Chat() {
         body: JSON.stringify({ messages }),
       });
       const data = await response.json();
-  
+
       // ✅ Append AI response after user message
-      setHistory((prev) => [...prev, { role: "assistant", content: data.reply }]);
-    } catch (err) { // ✅ Ensure proper error handling
+      setHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: data.reply },
+      ]);
+    } catch (err) {
+      // ✅ Ensure proper error handling
       console.error("❌ AI Fetch Error:", err);
       setError("Failed to fetch response from AI.");
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleNewMessage = (message: { role: string; content: string }) => {
     setHistory((prev) => {
@@ -106,7 +113,11 @@ export default function Chat() {
         <div className={styles.navbar}>
           <Navbar />
         </div>
-        <section className={`${styles.container} ${history.length > 0 ? styles.container__bottom : ""}`}>
+        <section
+          className={`${styles.container} ${
+            history.length > 0 ? styles.container__bottom : ""
+          }`}
+        >
           <div className={styles.container__feed} ref={chatContainerRef}>
             <div className={styles.container__intro}>
               <h1>
@@ -115,7 +126,8 @@ export default function Chat() {
                 Just AI-Powered Answers.
               </h1>
               <p>
-                An interactive AI portfolio that delivers instant insights into my work, leadership, and expertise—just ask.
+                An interactive AI portfolio that delivers instant insights into
+                my work, leadership, and expertise—just ask.
               </p>
             </div>
 
@@ -123,7 +135,11 @@ export default function Chat() {
             {history.length === 0 && (
               <div className={styles.container__prompts}>
                 {randomPrompts.map((prompt, index) => (
-                  <button key={index} onClick={() => handlePromptClick(prompt)} disabled={loading}>
+                  <button
+                    key={index}
+                    onClick={() => handlePromptClick(prompt)}
+                    disabled={loading}
+                  >
                     {prompt}
                   </button>
                 ))}
@@ -136,7 +152,10 @@ export default function Chat() {
                 <UserPrompt key={index}>{msg.content}</UserPrompt>
               ) : (
                 <AIResponse key={index}>
-                  <TypingEffect text={msg.content} isActive={index === history.length - 1} />
+                  <TypingEffect
+                    text={msg.content}
+                    isActive={index === history.length - 1}
+                  />
                 </AIResponse>
               )
             )}

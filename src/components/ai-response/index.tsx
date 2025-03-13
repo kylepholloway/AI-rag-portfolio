@@ -3,14 +3,14 @@ import styles from "./AiResponse.module.scss";
 import Robot from "@/assets/icons/robot.svg";
 
 interface AIResponseProps {
-  children: ReactNode;
+  children: ReactNode; // Accept any valid JSX elements
 }
 
 const AIResponse: React.FC<AIResponseProps> = ({ children }) => {
   return (
-    <div className={`${styles.container} ${styles.assistant}`}>
+    <div className={styles.container}>
       <Robot />
-      <p className={styles.text}>{children}</p>
+      <div className={styles.text}>{children}</div>
     </div>
   );
 };

@@ -11,9 +11,20 @@
         height: var(--space-md);
     }
 
-    > p {
+    div {
         flex: 1;
+    }
+
+     p {
         color: var(--color-gray-100);
         @include body();
+    }
+    
+    ul, ol {
+
+        li {
+            color: var(--color-gray-100);
+            @include body();
+        }
     }
 }

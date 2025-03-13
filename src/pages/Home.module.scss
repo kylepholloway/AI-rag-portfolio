@@ -27,10 +27,12 @@
     background: var(--gradient-bg);
     flex: 1;
     z-index: 1;
+    height: calc(100vh - var(--space-4xl));
     padding: 0 var(--space-base) var(--space-lg) var(--space-base);
     transition: var(--transition-basic);
     overflow: hidden;
     @include breakpoint(lg) {
+        height: unset;
         justify-content: center;
         padding: var(--space-3xl);
     }
@@ -94,6 +96,9 @@
         gap: var(--space-base);
         margin: 0 auto var(--space-2xl) auto;
         max-width: 500px;
+        @include breakpoint(md) {
+            text-align: left;
+        }
 
         > h1 {
             margin: 0;
@@ -112,9 +117,13 @@
     &__prompts {
         display: flex;
         flex-direction: row;
-        gap: var(--space-md);
-        margin-bottom: var(--space-lg);
+        gap: var(--space-base);
+        margin-bottom: var(--space-base);
         width: 100%;
+        @include breakpoint(md) {
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
 
         button {
             display: flex;

@@ -6,6 +6,7 @@ import UserPrompt from "@/components/user-prompt";
 import AIForm from "@/components/ai-form";
 import TypingEffect from "@/components/typing-effect";
 import Head from 'next/head';
+import MobileMenu from "@/components/mobile-menu";
 
 export default function Chat() {
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
@@ -78,7 +79,10 @@ export default function Chat() {
         <title>Kyle Holloway&apos;s AI-Powered Portfolio</title>
       </Head>
       <div className={styles.wrapper}>
-        <Navbar />
+        <MobileMenu />
+        <div className={styles.navbar}>
+          <Navbar />
+        </div>
         <section className={`${styles.container} ${history.length > 0 ? styles.container__bottom : ""}`}>
           <div className={styles.container__feed} ref={chatContainerRef}>
             <div className={styles.container__intro}>

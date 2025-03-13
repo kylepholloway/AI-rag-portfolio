@@ -1,0 +1,64 @@
+@use '../../styles/mixins/breakpoints' as *;
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md);
+  background-color: var(--color-gray-900);
+
+  @include breakpoint(lg) {
+    display: none;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  color: var(--color-gray-100);
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+
+  &.open {
+    transform: rotate(45deg);
+  }
+
+  span {
+    display: block;
+    height: 2px;
+    background-color: var(--color-gray-100);
+    transition: transform 0.3s ease-in-out;
+
+    &:nth-child(1) {
+      transform-origin: top left;
+    }
+
+    &:nth-child(2) {
+      transform-origin: center;
+    }
+
+    &:nth-child(3) {
+      transform-origin: bottom left;
+    }
+
+    &.open:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    &.open:nth-child(2) {
+      opacity: 0;
+    }
+
+    &.open:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+  }
+}

@@ -1,14 +1,19 @@
 @use 'sass:math';
 @use '../../styles/mixins/typography' as *;
+@use '../../styles/mixins/breakpoints' as *;
 
 .container {
   position: absolute;
-  left: 0;
-  top: calc(var(--space-lg) * -1);
+  left: var(--space-md);
+  top: calc(var(--space-md) * -1);
   display: inline-block;
   color: var(--color-light);
   letter-spacing: var(--space-2xs);
   @include body('Alt');
+  @include breakpoint(lg) {
+    left: 0;
+    top: calc(var(--space-lg) * -1);
+  }
 }
 
 @for $i from 0 through 12 {

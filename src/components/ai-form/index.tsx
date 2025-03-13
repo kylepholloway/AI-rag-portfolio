@@ -27,7 +27,9 @@ const AIForm: React.FC<AIFormProps> = ({ onNewMessage, setError, loading, setLoa
 
   return (
     <form onSubmit={handleSubmit} className={isActive ? "active" : ""}>
-      {loading && <Loader text="GENERATING..." />}
+      {loading && 
+      <Loader text="GENERATING..." />
+      }
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}

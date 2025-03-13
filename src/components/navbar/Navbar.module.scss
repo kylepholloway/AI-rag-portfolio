@@ -1,13 +1,24 @@
 @use '../../styles/mixins/typography' as *;
+@use '../../styles/mixins/breakpoints' as *;
 
 .container {
+    position: absolute;
+    top: var(--space-4xl);
+    left: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 500px;
     background-color: var(--color-gray-900);
-    border-right: 1px solid var(--color-gray-600);
-    z-index: 1;
+    height: calc(100vh - var(--space-4xl));
+    z-index: 2;
+    @include breakpoint(lg) {
+        position: relative;
+        top: unset;
+        left: unset;
+        height: unset;
+        width: 500px;
+        border-right: 1px solid var(--color-gray-600);
+    }
 }
 
 .author {
@@ -16,6 +27,12 @@
     padding: var(--space-md);
     gap: var(--space-2xs);
     border-bottom: 1px solid var(--color-gray-600);
+    border-top: 1px solid var(--color-gray-600);
+    align-items: center;
+    @include breakpoint(lg) {
+        border-top: none;
+        align-items: flex-start;
+    }
 
     &__name {
         display: flex;
@@ -29,8 +46,14 @@
     }
 
     &__title {
+        text-align: center;
+        padding: 0 var(--space-md);
         color: var(--color-gray-100);
         @include body('Alt');
+        @include breakpoint(lg) {
+            padding: 0;
+            text-align: left;
+         }
     }
 }
 

@@ -1,8 +1,21 @@
 @use '../styles/mixins/typography' as *;
+@use '../styles/mixins/breakpoints' as *;
 
 .wrapper {
+    position: relative;
     height: 100vh;
     display: flex;
+    flex-direction: column;
+    @include breakpoint(lg) {
+        flex-direction: row;
+    }
+}
+
+.navbar {
+    display: none;
+    @include breakpoint(lg) {
+        display: flex;
+    }
 }
 
 .container {
@@ -10,13 +23,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     background: var(--gradient-bg);
     flex: 1;
     z-index: 1;
-    padding: var(--space-3xl);
+    padding: 0 var(--space-base) var(--space-lg) var(--space-base);
     transition: var(--transition-basic);
     overflow: hidden;
+    @include breakpoint(lg) {
+        justify-content: center;
+        padding: var(--space-3xl);
+    }
 
     &::after {
         content: '';
@@ -25,9 +42,12 @@
         left: 0;
         right: 0;
         bottom: 0;
-        height: 400px;
+        height: 150px;
         background: linear-gradient(180deg, var(--color-gray-900) 20%, rgba(37, 41, 48, 0.00) 100%);
         z-index: 2;
+        @include breakpoint(md) {
+            height: 400px;
+        }
     }
 
     &__bottom {
@@ -38,8 +58,11 @@
         position: relative;
         overflow-y: auto;
         overflow-x: hidden;
-        padding: var(--space-3xl) var(--space-xs) 0 var(--space-base);
-        width: 600px;
+        padding: 0 var(--space-sm) var(--space-sm);
+        @include breakpoint(lg) {
+            width: 600px;
+            padding: var(--space-3xl) var(--space-xs) 0 var(--space-base);
+        }
 
         &::-webkit-scrollbar {
             width: var(--space-xs);

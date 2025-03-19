@@ -1,110 +1,105 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import styles from "./Home.module.scss";
-import Navbar from "@/components/navbar";
-import AIResponse from "@/components/ai-response";
-import UserPrompt from "@/components/user-prompt";
-import AIForm from "@/components/ai-form";
-import TypingEffect from "@/components/typing-effect";
-import Head from "next/head";
-import MobileMenu from "@/components/mobile-menu";
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import styles from './Home.module.scss'
+import Navbar from '@/components/navbar'
+import AIResponse from '@/components/ai-response'
+import UserPrompt from '@/components/user-prompt'
+import AIForm from '@/components/ai-form'
+import TypingEffect from '@/components/typing-effect'
+import Head from 'next/head'
+import MobileMenu from '@/components/mobile-menu'
 
 export default function Chat() {
-  const [history, setHistory] = useState<{ role: string; content: string }[]>(
-    []
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-  const scrollAnchorRef = useRef<HTMLDivElement>(null); // Scroll anchor element
+  const [history, setHistory] = useState<{ role: string; content: string }[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const chatContainerRef = useRef<HTMLDivElement>(null)
+  const scrollAnchorRef = useRef<HTMLDivElement>(null)
+  const isFetchingRef = useRef(false)
 
-  // Ensure the chat feed always scrolls to the latest message or typing animation
+  // ✅ Ensure chat scrolls to the latest message or animation
   const scrollToBottom = useCallback(() => {
-    if (scrollAnchorRef.current) {
-      scrollAnchorRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []); // Stable reference with an empty dependency array
+    scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
 
   useEffect(() => {
-    scrollToBottom(); // Ensure the feed is scrolled to the bottom when history changes
-  }, [history, scrollToBottom]);
-
-  const isFetchingRef = useRef(false);
+    scrollToBottom()
+  }, [history, scrollToBottom])
 
   const sendMessageToAI = async (messages: { role: string; content: string }[]) => {
-    if (isFetchingRef.current) return; // Prevents duplicate calls
-    isFetchingRef.current = true;
-    setLoading(true);
-    setError(""); // ✅ Clear error when sending a message
-  
+    if (isFetchingRef.current) return
+    isFetchingRef.current = true
+    setLoading(true)
+    setError('') // ✅ Clear error when sending a message
+
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages }),
-      });
-      const data = await response.json();
-  
-      setHistory((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      })
+      const data = await response.json()
+
+      setHistory((prev) => [...prev, { role: 'assistant', content: data.reply }])
     } catch (err) {
-      console.error("❌ AI Fetch Error:", err);
-      setError("Failed to fetch response from AI.");
+      console.error('❌ AI Fetch Error:', err)
+      setError('Failed to fetch response from AI.')
     } finally {
-      isFetchingRef.current = false;
-      setLoading(false);
+      isFetchingRef.current = false
+      setLoading(false)
     }
-  };
-  
+  }
 
   const handleNewMessage = (message: { role: string; content: string }) => {
-    if (message.role === "user" && !loading) {
+    if (message.role === 'user' && !loading) {
       setHistory((prev) => {
-        const newHistory = [...prev, message];
-        sendMessageToAI(newHistory); // Call AI only once
-        return newHistory;
-      });
+        const newHistory = [...prev, message]
+        sendMessageToAI(newHistory)
+        return newHistory
+      })
     } else {
-      setHistory((prev) => [...prev, message]);
+      setHistory((prev) => [...prev, message])
     }
-  };
-  
+  }
 
-  // ✅ Prevents duplicate AI responses when clicking a prompt
   const handlePromptClick = (prompt: string) => {
     if (!loading) {
-      handleNewMessage({ role: "user", content: prompt });
+      handleNewMessage({ role: 'user', content: prompt })
     }
-  };
+  }
 
-  const prompts = [
-    "What are Kyle's strengths and weaknesses?",
-    "What are Kyle's most notable projects?",
-    "What is Kyle's work experience?",
-    "What are Kyle's technical skills?",
-    "What are Kyle's educational qualifications?",
-    "What are Kyle's hobbies and interests?",
-    "What awards has Kyle received?",
-    "What is Kyle's approach to problem-solving?",
-    "What are Kyle's future goals?",
-    "How does Kyle handle team projects?",
-    "What is Kyle's leadership style?",
-    "What are Kyle's contributions to open-source projects?",
-  ];
+  // ✅ Memoize the prompts to avoid unnecessary re-renders
+  const prompts = useMemo(
+    () => [
+      "What are Kyle's strengths and weaknesses?",
+      "What are Kyle's most notable projects?",
+      "What is Kyle's work experience?",
+      "What are Kyle's technical skills?",
+      "What are Kyle's educational qualifications?",
+      "What are Kyle's hobbies and interests?",
+      'What awards has Kyle received?',
+      "What is Kyle's approach to problem-solving?",
+      "What are Kyle's future goals?",
+      'How does Kyle handle team projects?',
+      "What is Kyle's leadership style?",
+      "What are Kyle's contributions to open-source projects?",
+    ],
+    [],
+  )
 
-  // Function to get random prompts based on device type
-  const getRandomPrompts = () => {
-    const isMobile = window.innerWidth < 768;
-    const promptCount = isMobile ? 2 : 3;
-    const shuffledPrompts = prompts.sort(() => 0.5 - Math.random());
-    return shuffledPrompts.slice(0, promptCount);
-  };
+  // ✅ Optimized function with `useCallback` to generate random prompts
+  const getRandomPrompts = useCallback(() => {
+    const isMobile = window.innerWidth < 768
+    const promptCount = isMobile ? 2 : 3
+    return [...prompts].sort(() => 0.5 - Math.random()).slice(0, promptCount)
+  }, [prompts])
 
-  const [randomPrompts, setRandomPrompts] = useState<string[]>([]);
+  const [randomPrompts, setRandomPrompts] = useState<string[]>([])
 
   useEffect(() => {
-    setRandomPrompts(getRandomPrompts());
-  }, []);
+    setRandomPrompts(getRandomPrompts())
+  }, [getRandomPrompts])
 
   return (
     <>
@@ -117,9 +112,7 @@ export default function Chat() {
           <Navbar />
         </div>
         <section
-          className={`${styles.container} ${
-            history.length > 0 ? styles.container__bottom : ""
-          }`}
+          className={`${styles.container} ${history.length > 0 ? styles.container__bottom : ''}`}
         >
           <div className={styles.container__feed} ref={chatContainerRef}>
             <div className={styles.container__intro}>
@@ -129,8 +122,8 @@ export default function Chat() {
                 Just AI-Powered Answers.
               </h1>
               <p>
-                An interactive AI portfolio that delivers instant insights into
-                my work, leadership, and expertise—just ask.
+                An interactive AI portfolio that delivers instant insights into my work, leadership,
+                and expertise—just ask.
               </p>
             </div>
 
@@ -138,11 +131,7 @@ export default function Chat() {
             {history.length === 0 && (
               <div className={styles.container__prompts}>
                 {randomPrompts.map((prompt, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handlePromptClick(prompt)}
-                    disabled={loading}
-                  >
+                  <button key={index} onClick={() => handlePromptClick(prompt)} disabled={loading}>
                     {prompt}
                   </button>
                 ))}
@@ -151,17 +140,17 @@ export default function Chat() {
 
             {/* ✅ Display user and AI messages */}
             {history.map((msg, index) =>
-              msg.role === "user" ? (
+              msg.role === 'user' ? (
                 <UserPrompt key={index}>{msg.content}</UserPrompt>
               ) : (
                 <AIResponse key={index}>
                   <TypingEffect
                     text={msg.content}
                     isActive={index === history.length - 1}
-                    onTypingProgress={scrollToBottom} // Notify parent during typing
+                    onTypingProgress={scrollToBottom}
                   />
                 </AIResponse>
-              )
+              ),
             )}
 
             {/* Scroll anchor to ensure smooth scrolling */}
@@ -180,5 +169,5 @@ export default function Chat() {
         </section>
       </div>
     </>
-  );
+  )
 }

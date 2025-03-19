@@ -34,7 +34,6 @@
     "normalize.css": "^8.0.1",
     "openai": "^4.87.4",
     "payload": "latest",
-    "pg-vector@latest": "link:drizzle-orm/pg-vector@latest",
     "postgres": "^3.4.5",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -54,8 +53,9 @@
     "sass": "^1.86.0",
     "typescript": "5.7.3"
   },
+  "packageManager": "pnpm@10.2.0",
   "engines": {
-    "node": "^18.20.2 || >=20.9.0"
+    "node": ">=18.20.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

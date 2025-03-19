@@ -1,1 +1,0 @@
-ALTER TABLE "embeddings" DROP CONSTRAINT "embeddings_document_id_unique";

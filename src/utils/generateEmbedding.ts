@@ -106,14 +106,14 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 /**
  * ✅ Extracts relevant text fields dynamically per collection type.
  */
-const extractRelevantText = (doc: any, collectionSlug: string): string => {
+const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: string): string => {
   try {
     if (!doc || typeof doc !== 'object') {
       console.error(`❌ extractRelevantText received invalid document for "${collectionSlug}"`)
       return ''
     }
 
-    let textSegments: string[] = []
+    const textSegments: string[] = []
 
     // ✅ Define collection-specific fields
     const collectionFields: Record<string, string[]> = {
@@ -128,8 +128,8 @@ const extractRelevantText = (doc: any, collectionSlug: string): string => {
     const textFields = collectionFields[collectionSlug] || ['title', 'content', 'description']
 
     textFields.forEach((field) => {
-      if (doc[field] && typeof doc[field] === 'string') {
-        textSegments.push(doc[field]) // ✅ Store plain strings
+      if (typeof doc[field] === 'string') {
+        textSegments.push(doc[field] as string) // ✅ Store plain strings
       } else if (doc[field] && typeof doc[field] === 'object') {
         textSegments.push(extractPlainText(doc[field])) // ✅ Extract Lexical Rich Text properly
       }
@@ -151,19 +151,23 @@ const extractRelevantText = (doc: any, collectionSlug: string): string => {
 /**
  * ✅ Extracts plain text from a Lexical Rich Text JSON structure.
  */
-const extractPlainText = (richText: any): string => {
+const extractPlainText = (richText: {
+  root?: { children?: Array<{ type: string; text?: string; children?: unknown[] }> }
+}): string => {
   try {
-    if (!richText || !richText.root || !Array.isArray(richText.root.children)) return ''
+    if (!richText?.root?.children?.length) return ''
 
-    let extractedText: string[] = []
+    const extractedText: string[] = []
 
-    const traverseNodes = (nodes: any[]) => {
+    const traverseNodes = (nodes: Array<{ type: string; text?: string; children?: unknown[] }>) => {
       nodes.forEach((node) => {
         if (node.type === 'text' && node.text) {
           extractedText.push(node.text) // ✅ Extract text
         }
         if (node.children && Array.isArray(node.children)) {
-          traverseNodes(node.children) // ✅ Recursively process children
+          traverseNodes(
+            node.children as Array<{ type: string; text?: string; children?: unknown[] }>,
+          )
         }
       })
     }

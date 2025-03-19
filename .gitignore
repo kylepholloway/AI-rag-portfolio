@@ -41,3 +41,10 @@ next-env.d.ts
 .env
 
 /media
+
+# Payload and Drizzle Migrations
+src/migrations/
+migrations/
+
+# Ignore VSCode settings
+.vscode/

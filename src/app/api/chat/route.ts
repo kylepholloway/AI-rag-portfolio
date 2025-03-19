@@ -2,7 +2,6 @@ import { openai } from '@/utils/openai'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
 import { sql } from 'drizzle-orm'
-import { embeddings } from '../../../../drizzle/schema'
 
 const sqlClient = neon(process.env.EMBEDDINGS_DATABASE_URL!)
 const db = drizzle(sqlClient)
@@ -11,7 +10,7 @@ const db = drizzle(sqlClient)
 interface EmbeddingResult {
   document_id: string
   collection_slug: string
-  context: string // ✅ Ensure this retrieves full text, not vectors
+  context: string // ✅ Retrieves full text, not vectors
 }
 
 export async function POST(req: Request) {
@@ -61,21 +60,15 @@ export async function POST(req: Request) {
     const rows: EmbeddingResult[] = result.rows.map((row) => ({
       document_id: row.document_id as string,
       collection_slug: row.collection_slug as string,
-      context: row.context as string, // ✅ Correctly retrieves full text
+      context: row.context as string,
     }))
-
-    if (rows.length === 0) {
-      console.log('⚠️ No relevant embeddings found, proceeding without context.')
-    }
 
     console.log(`✅ Found ${rows.length} relevant document(s)`)
 
     // ✅ Step 3: Prepare Full Context for AI
-    let contextData: string[] = []
-    for (const row of rows) {
-      contextData.push(`Collection: ${row.collection_slug}\nContent: ${row.context}`)
-    }
-
+    const contextData = rows.map(
+      (row) => `Collection: ${row.collection_slug}\nContent: ${row.context}`,
+    )
     const context: string = contextData.join('\n\n')
 
     console.log('📄 Retrieved Context for AI:', context)

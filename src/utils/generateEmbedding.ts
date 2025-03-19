@@ -33,7 +33,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 
     console.log(`✅ Final document ID (UUID format): ${documentId}`)
 
-    // ✅ Extract relevant text fields dynamically
+    // ✅ Extract all relevant text fields dynamically
     const rawText = extractRelevantText(doc, collection.slug)
 
     if (!rawText) {
@@ -54,20 +54,21 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 
     console.log(`🛠️ Preparing to upsert into Neon DB...`)
 
-    // ✅ Use UPSERT to avoid duplicate rows
+    // ✅ Use UPSERT to avoid duplicate rows, store both vector & raw text
     await db
       .insert(embeddings)
       .values({
         documentId,
         collectionSlug: collection.slug,
         embedding: embeddingVector,
+        context: rawText, // 🔹 Store full raw text context
       })
       .onConflictDoUpdate({
-        target: embeddings.documentId, // ✅ Now using a UNIQUE column
-        set: { embedding: embeddingVector, updatedAt: new Date() },
+        target: embeddings.documentId, // ✅ Ensure uniqueness
+        set: { embedding: embeddingVector, context: rawText, updatedAt: new Date() },
       })
 
-    console.log(`✅ Successfully upserted embedding for document ID: ${documentId}`)
+    console.log(`✅ Successfully upserted embedding & context for document ID: ${documentId}`)
 
     return doc // ✅ Return original document
   } catch (error) {
@@ -77,7 +78,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 }
 
 /**
- * ✅ Extracts relevant text fields from different collections dynamically.
+ * ✅ Extracts relevant text fields dynamically per collection type.
  */
 const extractRelevantText = (doc: any, collectionSlug: string): string => {
   try {
@@ -88,14 +89,23 @@ const extractRelevantText = (doc: any, collectionSlug: string): string => {
 
     let textSegments: string[] = []
 
-    // ✅ Common text fields across collections
-    const textFields = ['title', 'content', 'description', 'question', 'answer', 'summary']
+    // ✅ Define collection-specific fields
+    const collectionFields: Record<string, string[]> = {
+      articles: ['title', 'content'],
+      fineTuningPrompts: ['prompt', 'context'],
+      hobbies: ['title', 'description'],
+      projects: ['title', 'content'],
+      skills: ['title', 'description'],
+      workExperience: ['title', 'content'],
+    }
+
+    const textFields = collectionFields[collectionSlug] || ['title', 'content', 'description']
 
     textFields.forEach((field) => {
       if (doc[field] && typeof doc[field] === 'string') {
-        textSegments.push(doc[field])
+        textSegments.push(doc[field]) // ✅ Store plain strings
       } else if (doc[field] && typeof doc[field] === 'object') {
-        textSegments.push(extractPlainText(doc[field])) // ✅ Extract from Lexical RichText
+        textSegments.push(extractPlainText(doc[field])) // ✅ Extract Lexical Rich Text properly
       }
     })
 
@@ -117,8 +127,24 @@ const extractRelevantText = (doc: any, collectionSlug: string): string => {
  */
 const extractPlainText = (richText: any): string => {
   try {
-    if (!richText?.root?.children) return ''
-    return richText.root.children.map((node: any) => (node.text ? node.text : '')).join(' ')
+    if (!richText || !richText.root || !Array.isArray(richText.root.children)) return ''
+
+    let extractedText: string[] = []
+
+    const traverseNodes = (nodes: any[]) => {
+      nodes.forEach((node) => {
+        if (node.type === 'text' && node.text) {
+          extractedText.push(node.text) // ✅ Extract text
+        }
+        if (node.children && Array.isArray(node.children)) {
+          traverseNodes(node.children) // ✅ Recursively process children
+        }
+      })
+    }
+
+    traverseNodes(richText.root.children)
+
+    return extractedText.join(' ').trim()
   } catch (error) {
     console.error('❌ Failed to extract plain text:', error)
     return ''

@@ -34,7 +34,7 @@ importers:
         version: 7.0.3
       drizzle-orm:
         specifier: ^0.40.1
-        version: 0.40.1(@neondatabase/serverless@0.10.4)(@types/pg@8.11.11)(@vercel/postgres@0.9.0)(gel@2.0.1)(pg@8.14.1)(postgres@3.4.5)
+        version: 0.40.1(@neondatabase/serverless@0.10.4)(@types/pg@8.11.11)(@vercel/postgres@0.9.0)(gel@2.0.1)(pg@8.11.3)(postgres@3.4.5)
       framer-motion:
         specifier: ^12.5.0
         version: 12.5.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -53,9 +53,6 @@ importers:
       payload:
         specifier: latest
         version: 3.28.1(bufferutil@4.0.9)(graphql@16.10.0)(typescript@5.7.3)(utf-8-validate@6.0.5)
-      pg:
-        specifier: ^8.14.1
-        version: 8.14.1
       pg-vector@latest:
         specifier: link:drizzle-orm/pg-vector@latest
         version: link:drizzle-orm/pg-vector@latest
@@ -81,9 +78,6 @@ importers:
       '@types/node':
         specifier: ^22.5.4
         version: 22.13.10
-      '@types/pg':
-        specifier: ^8.11.11
-        version: 8.11.11
       '@types/react':
         specifier: 19.0.10
         version: 19.0.10
@@ -4262,15 +4256,6 @@ packages:
       pg-native:
         optional: true
 
-  pg@8.14.1:
-    resolution: {integrity: sha512-0TdbqfjwIun9Fm/r89oB7RFQ0bLgduAhiIqIXOsyKoiC/L54DbuAAzIEN/9Op0f1Po9X7iCPXGoa/Ah+2aI8Xw==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      pg-native: '>=3.0.1'
-    peerDependenciesMeta:
-      pg-native:
-        optional: true
-
   pgpass@1.0.5:
     resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
 
@@ -7881,6 +7866,7 @@ snapshots:
       '@types/node': 22.13.10
       pg-protocol: 1.8.0
       pg-types: 4.0.2
+    optional: true
 
   '@types/pg@8.11.6':
     dependencies:
@@ -8601,13 +8587,13 @@ snapshots:
       postgres: 3.4.5
       react: 19.0.0
 
-  drizzle-orm@0.40.1(@neondatabase/serverless@0.10.4)(@types/pg@8.11.11)(@vercel/postgres@0.9.0)(gel@2.0.1)(pg@8.14.1)(postgres@3.4.5):
+  drizzle-orm@0.40.1(@neondatabase/serverless@0.10.4)(@types/pg@8.11.11)(@vercel/postgres@0.9.0)(gel@2.0.1)(pg@8.11.3)(postgres@3.4.5):
     optionalDependencies:
       '@neondatabase/serverless': 0.10.4
       '@types/pg': 8.11.11
       '@vercel/postgres': 0.9.0
       gel: 2.0.1
-      pg: 8.14.1
+      pg: 8.11.3
       postgres: 3.4.5
 
   dunder-proto@1.0.1:
@@ -10072,10 +10058,6 @@ snapshots:
     dependencies:
       pg: 8.11.3
 
-  pg-pool@3.8.0(pg@8.14.1):
-    dependencies:
-      pg: 8.14.1
-
   pg-protocol@1.8.0: {}
 
   pg-types@2.2.0:
@@ -10102,16 +10084,6 @@ snapshots:
       packet-reader: 1.0.0
       pg-connection-string: 2.7.0
       pg-pool: 3.8.0(pg@8.11.3)
-      pg-protocol: 1.8.0
-      pg-types: 2.2.0
-      pgpass: 1.0.5
-    optionalDependencies:
-      pg-cloudflare: 1.1.1
-
-  pg@8.14.1:
-    dependencies:
-      pg-connection-string: 2.7.0
-      pg-pool: 3.8.0(pg@8.14.1)
       pg-protocol: 1.8.0
       pg-types: 2.2.0
       pgpass: 1.0.5

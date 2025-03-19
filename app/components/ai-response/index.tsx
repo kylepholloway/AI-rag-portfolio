@@ -3,7 +3,7 @@ import styles from "./AiResponse.module.scss";
 import Robot from "@/assets/icons/robot.svg";
 
 interface AIResponseProps {
-  children: ReactNode; // Accept any valid JSX elements
+  children: ReactNode;
 }
 
 const AIResponse: React.FC<AIResponseProps> = ({ children }) => {

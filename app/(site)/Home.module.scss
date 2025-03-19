@@ -67,6 +67,7 @@
         }
 
         &::-webkit-scrollbar {
+            display: none;
             width: var(--space-xs);
             position: absolute;
             right: 0;

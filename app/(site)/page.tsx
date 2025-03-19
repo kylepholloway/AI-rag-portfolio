@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./Home.module.scss";
 import Navbar from "@/components/navbar";
 import AIResponse from "@/components/ai-response";
@@ -15,23 +17,27 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const scrollAnchorRef = useRef<HTMLDivElement>(null); // Scroll anchor element
 
-  // Ensure the chat feed always scrolls to the latest message
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      const lastMessage = chatContainerRef.current.lastElementChild;
-      if (lastMessage) {
-        lastMessage.scrollIntoView({ behavior: "smooth" });
-      }
+  // Ensure the chat feed always scrolls to the latest message or typing animation
+  const scrollToBottom = useCallback(() => {
+    if (scrollAnchorRef.current) {
+      scrollAnchorRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [history]);
+  }, []); // Stable reference with an empty dependency array
 
-  const sendMessageToAI = async (
-    messages: { role: string; content: string }[]
-  ) => {
+  useEffect(() => {
+    scrollToBottom(); // Ensure the feed is scrolled to the bottom when history changes
+  }, [history, scrollToBottom]);
+
+  const isFetchingRef = useRef(false);
+
+  const sendMessageToAI = async (messages: { role: string; content: string }[]) => {
+    if (isFetchingRef.current) return; // Prevents duplicate calls
+    isFetchingRef.current = true;
     setLoading(true);
     setError(""); // ✅ Clear error when sending a message
-
+  
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -39,33 +45,30 @@ export default function Chat() {
         body: JSON.stringify({ messages }),
       });
       const data = await response.json();
-
-      // ✅ Append AI response after user message
-      setHistory((prev) => [
-        ...prev,
-        { role: "assistant", content: data.reply },
-      ]);
+  
+      setHistory((prev) => [...prev, { role: "assistant", content: data.reply }]);
     } catch (err) {
-      // ✅ Ensure proper error handling
       console.error("❌ AI Fetch Error:", err);
       setError("Failed to fetch response from AI.");
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
     }
   };
+  
 
   const handleNewMessage = (message: { role: string; content: string }) => {
-    setHistory((prev) => {
-      const newHistory = [...prev, message];
-
-      // ✅ Only call AI response if the new message is from the user
-      if (message.role === "user") {
-        sendMessageToAI(newHistory);
-      }
-
-      return newHistory;
-    });
+    if (message.role === "user" && !loading) {
+      setHistory((prev) => {
+        const newHistory = [...prev, message];
+        sendMessageToAI(newHistory); // Call AI only once
+        return newHistory;
+      });
+    } else {
+      setHistory((prev) => [...prev, message]);
+    }
   };
+  
 
   // ✅ Prevents duplicate AI responses when clicking a prompt
   const handlePromptClick = (prompt: string) => {
@@ -155,11 +158,14 @@ export default function Chat() {
                   <TypingEffect
                     text={msg.content}
                     isActive={index === history.length - 1}
+                    onTypingProgress={scrollToBottom} // Notify parent during typing
                   />
                 </AIResponse>
               )
             )}
 
+            {/* Scroll anchor to ensure smooth scrolling */}
+            <div ref={scrollAnchorRef} />
             {error && <p className={styles.error}>{error}</p>}
           </div>
 

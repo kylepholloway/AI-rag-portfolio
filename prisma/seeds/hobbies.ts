@@ -1,4 +1,4 @@
-import { storeEmbedding } from "../../src/utils/storeEmbedding";
+import { storeEmbedding } from "../../app/utils/storeEmbedding";
 
 export async function seedHobbies() {
   const hobbies = [

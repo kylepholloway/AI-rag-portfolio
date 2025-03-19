@@ -1,0 +1,129 @@
+@use '../../styles/mixins/typography' as *;
+@use '../../styles/mixins/breakpoints' as *;
+
+.wrapper {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    @include breakpoint(lg) {
+        flex-direction: row;
+    }
+}
+
+.navbar {
+    display: none;
+    @include breakpoint(lg) {
+        display: flex;
+    }
+}
+
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    background: var(--gradient-bg);
+    flex: 1;
+    z-index: 1;
+    height: calc(100vh - var(--space-4xl));
+    padding: 0 var(--space-base) var(--space-lg) var(--space-base);
+    transition: var(--transition-basic);
+    overflow: hidden;
+    @include breakpoint(md) {
+        height: unset;
+        justify-content: center;
+        padding: 0 var(--space-3xl) var(--space-3xl);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 150px;
+        background: linear-gradient(180deg, rgba(26, 29, 34, 0.95) 20%, rgba(37, 41, 48, 0.00) 100%);
+        z-index: 2;
+        @include breakpoint(md) {
+            height: 400px;
+        }
+    }
+
+    &__bottom {
+        justify-content: flex-end;
+    }
+
+    &__feed {
+        position: relative;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0 var(--space-sm) var(--space-sm);
+        @include breakpoint(lg) {
+            width: 600px;
+            padding: 0 var(--space-xs) 0 var(--space-base);
+        }
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    &__intro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-base);
+        margin: 0 auto var(--space-2xl) auto;
+        max-width: 500px;
+        @include breakpoint(md) {
+            text-align: left;
+        }
+
+        > h1 {
+            margin: 0;
+            text-align: center;
+            color: var(--color-gray-100);
+            @include heading-4('Alt');
+        }
+
+        > p {
+            text-align: center;
+            color: var(--color-light);
+            @include body();
+        }
+    }
+
+    &__prompts {
+        display: flex;
+        flex-direction: row;
+        gap: var(--space-base);
+        margin-bottom: var(--space-base);
+        width: 100%;
+        @include breakpoint(md) {
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        button {
+            display: flex;
+            border: 1px solid var(--color-gray-600);
+            border-radius: var(--radius-lg);
+            background: transparent;
+            flex: 1;
+            color: var(--color-light);
+            padding: var(--space-xs) var(--space-base);
+            transition: var(--transition-basic);
+            text-align: left;
+            cursor: pointer;
+            @include body('sm');
+
+            &:hover {
+                background: var(--color-gray-800);
+            }
+        }
+    }
+}

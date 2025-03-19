@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import generateEmbedding from '@/utils/generateEmbedding'
+import deleteEmbedding from '@/utils/deleteEmbedding'
 
 export const WorkExperience: CollectionConfig = {
   slug: 'workExperience',
@@ -18,5 +19,8 @@ export const WorkExperience: CollectionConfig = {
       editor: lexicalEditor(),
     },
   ],
-  hooks: { afterChange: [generateEmbedding] },
+  hooks: {
+    afterChange: [generateEmbedding],
+    afterDelete: [deleteEmbedding],
+  },
 }

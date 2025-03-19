@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import generateEmbedding from '@/utils/generateEmbedding'
+import deleteEmbedding from '@/utils/deleteEmbedding'
 
 export const QA: CollectionConfig = {
   slug: 'qa',
@@ -10,5 +11,8 @@ export const QA: CollectionConfig = {
     { name: 'question', type: 'text', required: true },
     { name: 'answer', type: 'richText', required: true, editor: lexicalEditor() },
   ],
-  hooks: { afterChange: [generateEmbedding] },
+  hooks: {
+    afterChange: [generateEmbedding],
+    afterDelete: [deleteEmbedding],
+  },
 }

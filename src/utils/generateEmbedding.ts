@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
 import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
+import { sql } from 'drizzle-orm'
 import { embeddings } from '../../drizzle/schema'
 import type { CollectionAfterChangeHook } from 'payload'
 
@@ -54,21 +55,46 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 
     console.log(`🛠️ Preparing to upsert into Neon DB...`)
 
-    // ✅ Use UPSERT to avoid duplicate rows, store both vector & raw text
-    await db
-      .insert(embeddings)
-      .values({
-        documentId,
-        collectionSlug: collection.slug,
-        embedding: embeddingVector,
-        context: rawText, // 🔹 Store full raw text context
-      })
-      .onConflictDoUpdate({
-        target: embeddings.documentId, // ✅ Ensure uniqueness
-        set: { embedding: embeddingVector, context: rawText, updatedAt: new Date() },
-      })
+    // ✅ Check if entry exists with BOTH `documentId` & `collectionSlug`
+    const existingEntry = await db
+      .select()
+      .from(embeddings)
+      .where(
+        sql`${embeddings.documentId} = ${documentId} AND ${embeddings.collectionSlug} = ${collection.slug}`,
+      )
+      .execute()
 
-    console.log(`✅ Successfully upserted embedding & context for document ID: ${documentId}`)
+    if (existingEntry.length > 0) {
+      // ✅ If entry exists, update it
+      await db
+        .update(embeddings)
+        .set({ embedding: embeddingVector, context: rawText, updatedAt: new Date() })
+        .where(
+          sql`${embeddings.documentId} = ${documentId} AND ${embeddings.collectionSlug} = ${collection.slug}`,
+        )
+        .execute()
+
+      console.log(
+        `✅ Updated embedding for document ID: ${documentId} in collection: "${collection.slug}"`,
+      )
+    } else {
+      // ✅ If entry does not exist, insert a new one
+      await db
+        .insert(embeddings)
+        .values({
+          documentId,
+          collectionSlug: collection.slug,
+          embedding: embeddingVector,
+          context: rawText,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .execute()
+
+      console.log(
+        `✅ Inserted new embedding for document ID: ${documentId} in collection: "${collection.slug}"`,
+      )
+    }
 
     return doc // ✅ Return original document
   } catch (error) {

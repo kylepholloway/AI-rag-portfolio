@@ -7,7 +7,7 @@ import type { CollectionAfterChangeHook } from 'payload'
 
 // ✅ Initialize OpenAI & Drizzle Neon connection
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-const sqlClient = neon(process.env.EMBEDDINGS_DATABASE_URL!)
+const sqlClient = neon(process.env.EMBEDDINGS_POSTGRES_URL!)
 const db = drizzle(sqlClient)
 
 const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection }) => {

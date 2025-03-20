@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
 import { sql } from 'drizzle-orm'
 
-const sqlClient = neon(process.env.EMBEDDINGS_DATABASE_URL!)
+const sqlClient = neon(process.env.EMBEDDINGS_POSTGRES_URL!)
 const db = drizzle(sqlClient)
 
 // ✅ Define TypeScript interface for DB results

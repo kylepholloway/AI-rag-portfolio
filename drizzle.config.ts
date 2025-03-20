@@ -8,6 +8,6 @@ export default defineConfig({
   out: './migrations', // Where migrations will be stored
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.EMBEDDINGS_DATABASE_URL!, // Use the correct environment variable
+    url: process.env.EMBEDDINGS_POSTGRES_URL!, // Use the correct environment variable
   },
 })

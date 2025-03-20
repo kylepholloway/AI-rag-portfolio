@@ -5,7 +5,7 @@ import { embeddings } from '../../drizzle/schema'
 import type { CollectionAfterDeleteHook } from 'payload'
 
 // ✅ Initialize Drizzle Neon connection
-const sqlClient = neon(process.env.EMBEDDINGS_DATABASE_URL!)
+const sqlClient = neon(process.env.EMBEDDINGS_POSTGRES_URL!)
 const db = drizzle(sqlClient)
 
 const deleteEmbedding: CollectionAfterDeleteHook = async ({ doc, collection }) => {

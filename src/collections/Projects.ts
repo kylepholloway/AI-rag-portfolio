@@ -10,6 +10,14 @@ export const Projects: CollectionConfig = {
     { name: 'title', type: 'text', required: true },
     { name: 'content', type: 'richText', required: true, editor: lexicalEditor() },
     {
+      name: 'url',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Provide a link to the project website or app if applicable.',
+      },
+    },
+    {
       name: 'keywords',
       type: 'array',
       label: 'Metadata / Keywords',

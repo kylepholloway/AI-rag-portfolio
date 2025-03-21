@@ -184,6 +184,10 @@ export interface WorkExperience {
     };
     [k: string]: unknown;
   };
+  /**
+   * Provide a link to the project website or app if applicable.
+   */
+  url?: string | null;
   keywords?:
     | {
         keyword?: string | null;
@@ -215,6 +219,10 @@ export interface Project {
     };
     [k: string]: unknown;
   };
+  /**
+   * Provide a link to the project website or app if applicable.
+   */
+  url?: string | null;
   keywords?:
     | {
         keyword?: string | null;
@@ -453,6 +461,7 @@ export interface MediaSelect<T extends boolean = true> {
 export interface WorkExperienceSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  url?: T;
   keywords?:
     | T
     | {
@@ -469,6 +478,7 @@ export interface WorkExperienceSelect<T extends boolean = true> {
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  url?: T;
   keywords?:
     | T
     | {

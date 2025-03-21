@@ -34,7 +34,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 
     console.log(`✅ Final document ID (UUID format): ${documentId}`)
 
-    // ✅ Extract all relevant text fields dynamically (including keywords where applicable)
+    // ✅ Extract all relevant text fields dynamically
     const rawText = extractRelevantText(doc, collection.slug)
 
     if (!rawText) {
@@ -105,7 +105,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 
 /**
  * ✅ Extracts relevant text fields dynamically per collection type.
- * Keywords are included for `articles`, `projects`, and `workExperience`.
+ * Keywords and URLs are included for `articles`, `projects`, and `workExperience`.
  */
 const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: string): string => {
   try {
@@ -119,8 +119,8 @@ const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: strin
     // ✅ Define collection-specific fields
     const collectionFields: Record<string, string[]> = {
       articles: ['title', 'content', 'keywords'],
-      projects: ['title', 'content', 'keywords'],
-      workExperience: ['title', 'content', 'keywords'],
+      projects: ['title', 'content', 'keywords', 'url'],
+      workExperience: ['title', 'content', 'keywords', 'url'],
       hobbies: ['title', 'description'],
       fineTuningPrompts: ['prompt', 'context'],
       qa: ['question', 'answer'],
@@ -135,7 +135,10 @@ const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: strin
       } else if (field === 'keywords' && Array.isArray(doc[field])) {
         // ✅ Extract keywords and append them as context (only for specific collections)
         const keywordsArray = (doc[field] as { keyword: string }[]).map((k) => k.keyword)
-        textSegments.push(keywordsArray.join(', '))
+        textSegments.push(`Keywords: ${keywordsArray.join(', ')}`)
+      } else if (field === 'url' && typeof doc[field] === 'string') {
+        // ✅ Append URL as part of the context (only for `projects` and `workExperience`)
+        textSegments.push(`URL: ${doc[field]}`)
       } else if (doc[field] && typeof doc[field] === 'object') {
         textSegments.push(extractPlainText(doc[field])) // ✅ Extract Lexical Rich Text properly
       }

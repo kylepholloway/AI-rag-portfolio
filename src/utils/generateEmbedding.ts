@@ -120,7 +120,7 @@ const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: strin
     const collectionFields: Record<string, string[]> = {
       articles: ['title', 'content', 'keywords'],
       projects: ['title', 'content', 'keywords', 'url'],
-      workExperience: ['title', 'content', 'keywords', 'url'],
+      workExperience: ['title', 'content', 'keywords', 'url', 'timePeriod'], // 🆕 Include timePeriod
       hobbies: ['title', 'description'],
       fineTuningPrompts: ['prompt', 'context'],
       qa: ['question', 'answer'],
@@ -133,12 +133,15 @@ const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: strin
       if (typeof doc[field] === 'string') {
         textSegments.push(doc[field] as string) // ✅ Store plain strings
       } else if (field === 'keywords' && Array.isArray(doc[field])) {
-        // ✅ Extract keywords and append them as context (only for specific collections)
+        // ✅ Extract keywords and append them as context
         const keywordsArray = (doc[field] as { keyword: string }[]).map((k) => k.keyword)
         textSegments.push(`Keywords: ${keywordsArray.join(', ')}`)
       } else if (field === 'url' && typeof doc[field] === 'string') {
-        // ✅ Append URL as part of the context (only for `projects` and `workExperience`)
+        // ✅ Append URL for WorkExperience and Projects
         textSegments.push(`URL: ${doc[field]}`)
+      } else if (field === 'timePeriod' && typeof doc[field] === 'string') {
+        // ✅ Append time period for WorkExperience
+        textSegments.push(`Employment Period: ${doc[field]}`)
       } else if (doc[field] && typeof doc[field] === 'object') {
         textSegments.push(extractPlainText(doc[field])) // ✅ Extract Lexical Rich Text properly
       }

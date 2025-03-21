@@ -169,6 +169,7 @@ export interface Media {
 export interface WorkExperience {
   id: number;
   title: string;
+  timePeriod?: string | null;
   content: {
     root: {
       type: string;
@@ -460,6 +461,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface WorkExperienceSelect<T extends boolean = true> {
   title?: T;
+  timePeriod?: T;
   content?: T;
   url?: T;
   keywords?:

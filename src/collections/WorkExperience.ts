@@ -13,6 +13,11 @@ export const WorkExperience: CollectionConfig = {
       required: true,
     },
     {
+      name: 'timePeriod',
+      type: 'text',
+      required: false,
+    },
+    {
       name: 'content',
       type: 'richText',
       required: true,

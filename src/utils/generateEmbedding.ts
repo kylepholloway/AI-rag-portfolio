@@ -34,7 +34,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 
     console.log(`✅ Final document ID (UUID format): ${documentId}`)
 
-    // ✅ Extract all relevant text fields dynamically
+    // ✅ Extract all relevant text fields dynamically (including keywords where applicable)
     const rawText = extractRelevantText(doc, collection.slug)
 
     if (!rawText) {
@@ -105,6 +105,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
 
 /**
  * ✅ Extracts relevant text fields dynamically per collection type.
+ * Keywords are included for `articles`, `projects`, and `workExperience`.
  */
 const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: string): string => {
   try {
@@ -117,12 +118,13 @@ const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: strin
 
     // ✅ Define collection-specific fields
     const collectionFields: Record<string, string[]> = {
-      articles: ['title', 'content'],
-      fineTuningPrompts: ['prompt', 'context'],
+      articles: ['title', 'content', 'keywords'],
+      projects: ['title', 'content', 'keywords'],
+      workExperience: ['title', 'content', 'keywords'],
       hobbies: ['title', 'description'],
-      projects: ['title', 'content'],
+      fineTuningPrompts: ['prompt', 'context'],
+      qa: ['question', 'answer'],
       skills: ['title', 'description'],
-      workExperience: ['title', 'content'],
     }
 
     const textFields = collectionFields[collectionSlug] || ['title', 'content', 'description']
@@ -130,6 +132,10 @@ const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: strin
     textFields.forEach((field) => {
       if (typeof doc[field] === 'string') {
         textSegments.push(doc[field] as string) // ✅ Store plain strings
+      } else if (field === 'keywords' && Array.isArray(doc[field])) {
+        // ✅ Extract keywords and append them as context (only for specific collections)
+        const keywordsArray = (doc[field] as { keyword: string }[]).map((k) => k.keyword)
+        textSegments.push(keywordsArray.join(', '))
       } else if (doc[field] && typeof doc[field] === 'object') {
         textSegments.push(extractPlainText(doc[field])) // ✅ Extract Lexical Rich Text properly
       }

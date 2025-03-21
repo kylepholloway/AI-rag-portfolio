@@ -18,6 +18,15 @@ export const WorkExperience: CollectionConfig = {
       required: true,
       editor: lexicalEditor(),
     },
+    {
+      name: 'keywords',
+      type: 'array',
+      label: 'Metadata / Keywords',
+      minRows: 0,
+      maxRows: 20,
+      labels: { singular: 'Keyword', plural: 'Keywords' },
+      fields: [{ name: 'keyword', type: 'text', required: false }],
+    },
   ],
   hooks: {
     afterChange: [generateEmbedding],

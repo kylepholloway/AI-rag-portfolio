@@ -184,6 +184,12 @@ export interface WorkExperience {
     };
     [k: string]: unknown;
   };
+  keywords?:
+    | {
+        keyword?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -209,6 +215,12 @@ export interface Project {
     };
     [k: string]: unknown;
   };
+  keywords?:
+    | {
+        keyword?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -256,6 +268,12 @@ export interface Article {
     };
     [k: string]: unknown;
   };
+  keywords?:
+    | {
+        keyword?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -435,6 +453,12 @@ export interface MediaSelect<T extends boolean = true> {
 export interface WorkExperienceSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  keywords?:
+    | T
+    | {
+        keyword?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -445,6 +469,12 @@ export interface WorkExperienceSelect<T extends boolean = true> {
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  keywords?:
+    | T
+    | {
+        keyword?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -475,6 +505,12 @@ export interface HobbiesSelect<T extends boolean = true> {
 export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  keywords?:
+    | T
+    | {
+        keyword?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

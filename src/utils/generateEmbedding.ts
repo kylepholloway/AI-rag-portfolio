@@ -5,200 +5,135 @@ import { sql } from 'drizzle-orm'
 import { embeddings } from '../../drizzle/schema'
 import type { CollectionAfterChangeHook } from 'payload'
 
-// ✅ Initialize OpenAI & Drizzle Neon connection
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const sqlClient = neon(process.env.EMBEDDINGS_POSTGRES_URL!)
 const db = drizzle(sqlClient)
 
 const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection }) => {
   try {
-    console.log(`🛠️ Processing document for collection: "${collection.slug}"`)
-    console.log(`📄 Received document:`, JSON.stringify(doc, null, 2))
+    if (!doc || typeof doc !== 'object') return doc
 
-    if (!doc || typeof doc !== 'object') {
-      console.warn(`⚠️ No valid document provided for "${collection.slug}" – Skipping embedding.`)
-      return doc
-    }
-
-    // ✅ Ensure documentId is valid
     let documentId = doc.id
-    if (!documentId) {
-      console.error(`❌ Missing document ID for "${collection.slug}" – Skipping embedding.`)
-      return doc
-    }
-
+    if (!documentId) return doc
     if (typeof documentId === 'number') {
-      console.warn(`⚠️ Document ID is a number. Converting to UUID format.`)
       documentId = convertNumberToUUID(documentId)
     }
 
-    console.log(`✅ Final document ID (UUID format): ${documentId}`)
-
-    // ✅ Extract all relevant text fields dynamically
     const rawText = extractRelevantText(doc, collection.slug)
+    const keywords = extractKeywords(doc)
+    const chunks = chunkText(rawText, 300)
 
-    if (!rawText) {
-      console.warn(`⚠️ No valid text content found for "${collection.slug}" – Skipping embedding.`)
-      return doc
-    }
-
-    console.log(`🔍 Generating embedding for: "${collection.slug}" (${rawText.length} chars)...`)
-
-    // ✅ Generate OpenAI embedding
-    const embeddingResponse = await openai.embeddings.create({
-      model: 'text-embedding-ada-002',
-      input: rawText,
-    })
-
-    const embeddingVector = embeddingResponse.data[0].embedding
-    console.log(`✅ Embedding generated! (${embeddingVector.length} dimensions)`)
-
-    console.log(`🛠️ Preparing to upsert into Neon DB...`)
-
-    // ✅ Check if entry exists with BOTH `documentId` & `collectionSlug`
-    const existingEntry = await db
-      .select()
-      .from(embeddings)
+    // Delete old chunks
+    await db
+      .delete(embeddings)
       .where(
         sql`${embeddings.documentId} = ${documentId} AND ${embeddings.collectionSlug} = ${collection.slug}`,
       )
       .execute()
 
-    if (existingEntry.length > 0) {
-      // ✅ If entry exists, update it
-      await db
-        .update(embeddings)
-        .set({ embedding: embeddingVector, context: rawText, updatedAt: new Date() })
-        .where(
-          sql`${embeddings.documentId} = ${documentId} AND ${embeddings.collectionSlug} = ${collection.slug}`,
-        )
-        .execute()
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      const embeddingResponse = await openai.embeddings.create({
+        model: 'text-embedding-ada-002',
+        input: chunk,
+      })
 
-      console.log(
-        `✅ Updated embedding for document ID: ${documentId} in collection: "${collection.slug}"`,
-      )
-    } else {
-      // ✅ If entry does not exist, insert a new one
+      const vector = embeddingResponse.data[0].embedding
+
       await db
         .insert(embeddings)
         .values({
           documentId,
+          chunkIndex: i,
           collectionSlug: collection.slug,
-          embedding: embeddingVector,
-          context: rawText,
+          embedding: vector,
+          context: chunk,
+          keywords,
           createdAt: new Date(),
           updatedAt: new Date(),
         })
         .execute()
-
-      console.log(
-        `✅ Inserted new embedding for document ID: ${documentId} in collection: "${collection.slug}"`,
-      )
     }
 
-    return doc // ✅ Return original document
+    return doc
   } catch (error) {
-    console.error('❌ Error generating embedding:', error)
-    return doc // ✅ Prevent save failure
+    console.error('❌ Embedding generation error:', error)
+    return doc
   }
 }
 
-/**
- * ✅ Extracts relevant text fields dynamically per collection type.
- * Keywords and URLs are included for `articles`, `projects`, and `workExperience`.
- */
-const extractRelevantText = (doc: Record<string, unknown>, collectionSlug: string): string => {
+function extractRelevantText(doc: Record<string, any>, slug: string): string {
+  const segments: string[] = []
+  const fields = {
+    articles: ['title', 'content', 'keywords'],
+    projects: ['title', 'content', 'keywords', 'url'],
+    workExperience: ['title', 'content', 'keywords', 'url', 'timePeriod'],
+    hobbies: ['title', 'description'],
+    fineTuningPrompts: ['prompt', 'context'],
+    qa: ['question', 'answer'],
+    skills: ['title', 'description'],
+  }[slug] || ['title', 'content']
+
+  for (const field of fields) {
+    const value = doc[field]
+    if (typeof value === 'string') segments.push(value)
+    if (field === 'keywords' && Array.isArray(value)) {
+      const words = value.map((k: any) => k.keyword).join(', ')
+      segments.push(`Keywords: ${words}`)
+    }
+    if (field === 'url' && value) segments.push(`URL: ${value}`)
+    if (field === 'timePeriod' && value) segments.push(`Period: ${value}`)
+    if (typeof value === 'object') segments.push(extractPlainText(value))
+  }
+
+  return segments.join(' ').trim()
+}
+
+function extractKeywords(doc: Record<string, any>): string[] {
+  if (!Array.isArray(doc.keywords)) return []
+  return doc.keywords.map((k: any) => k.keyword)
+}
+
+function extractPlainText(richText: any): string {
   try {
-    if (!doc || typeof doc !== 'object') {
-      console.error(`❌ extractRelevantText received invalid document for "${collectionSlug}"`)
-      return ''
-    }
-
-    const textSegments: string[] = []
-
-    // ✅ Define collection-specific fields
-    const collectionFields: Record<string, string[]> = {
-      articles: ['title', 'content', 'keywords'],
-      projects: ['title', 'content', 'keywords', 'url'],
-      workExperience: ['title', 'content', 'keywords', 'url', 'timePeriod'], // 🆕 Include timePeriod
-      hobbies: ['title', 'description'],
-      fineTuningPrompts: ['prompt', 'context'],
-      qa: ['question', 'answer'],
-      skills: ['title', 'description'],
-    }
-
-    const textFields = collectionFields[collectionSlug] || ['title', 'content', 'description']
-
-    textFields.forEach((field) => {
-      if (typeof doc[field] === 'string') {
-        textSegments.push(doc[field] as string) // ✅ Store plain strings
-      } else if (field === 'keywords' && Array.isArray(doc[field])) {
-        // ✅ Extract keywords and append them as context
-        const keywordsArray = (doc[field] as { keyword: string }[]).map((k) => k.keyword)
-        textSegments.push(`Keywords: ${keywordsArray.join(', ')}`)
-      } else if (field === 'url' && typeof doc[field] === 'string') {
-        // ✅ Append URL for WorkExperience and Projects
-        textSegments.push(`URL: ${doc[field]}`)
-      } else if (field === 'timePeriod' && typeof doc[field] === 'string') {
-        // ✅ Append time period for WorkExperience
-        textSegments.push(`Employment Period: ${doc[field]}`)
-      } else if (doc[field] && typeof doc[field] === 'object') {
-        textSegments.push(extractPlainText(doc[field])) // ✅ Extract Lexical Rich Text properly
+    if (!richText?.root?.children) return ''
+    const output: string[] = []
+    const walk = (nodes: any[]) => {
+      for (const node of nodes) {
+        if (node.text) output.push(node.text)
+        if (node.children) walk(node.children)
       }
-    })
-
-    if (textSegments.length === 0) {
-      console.warn(
-        `⚠️ No valid text found for collection "${collectionSlug}" – Skipping embedding.`,
-      )
     }
-
-    return textSegments.join(' ').trim()
-  } catch (error) {
-    console.error(`❌ Failed to extract text for collection "${collectionSlug}":`, error)
+    walk(richText.root.children)
+    return output.join(' ').trim()
+  } catch {
     return ''
   }
 }
 
-/**
- * ✅ Extracts plain text from a Lexical Rich Text JSON structure.
- */
-const extractPlainText = (richText: {
-  root?: { children?: Array<{ type: string; text?: string; children?: unknown[] }> }
-}): string => {
-  try {
-    if (!richText?.root?.children?.length) return ''
+function chunkText(text: string, chunkSize: number): string[] {
+  const sentences = text.split(/(?<=[.?!])\s+/)
+  const chunks: string[] = []
+  let chunk: string[] = []
+  let length = 0
 
-    const extractedText: string[] = []
-
-    const traverseNodes = (nodes: Array<{ type: string; text?: string; children?: unknown[] }>) => {
-      nodes.forEach((node) => {
-        if (node.type === 'text' && node.text) {
-          extractedText.push(node.text) // ✅ Extract text
-        }
-        if (node.children && Array.isArray(node.children)) {
-          traverseNodes(
-            node.children as Array<{ type: string; text?: string; children?: unknown[] }>,
-          )
-        }
-      })
+  for (const sentence of sentences) {
+    if (length + sentence.length > chunkSize) {
+      chunks.push(chunk.join(' '))
+      chunk = []
+      length = 0
     }
-
-    traverseNodes(richText.root.children)
-
-    return extractedText.join(' ').trim()
-  } catch (error) {
-    console.error('❌ Failed to extract plain text:', error)
-    return ''
+    chunk.push(sentence)
+    length += sentence.length
   }
+  if (chunk.length > 0) chunks.push(chunk.join(' '))
+
+  return chunks
 }
 
-/**
- * ✅ Converts a number ID to a valid UUID format.
- */
-const convertNumberToUUID = (num: number): string => {
-  const hexString = num.toString(16).padStart(32, '0') // Convert number to hex and pad
-  return `${hexString.slice(0, 8)}-${hexString.slice(8, 12)}-${hexString.slice(12, 16)}-${hexString.slice(16, 20)}-${hexString.slice(20)}`
+function convertNumberToUUID(num: number): string {
+  const hex = num.toString(16).padStart(32, '0')
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
 }
 
 export default generateEmbedding

@@ -18,6 +18,13 @@ interface EmbeddingResult {
   time_period?: string
 }
 
+function formatChunkMarkdown(chunk: EmbeddingResult): string {
+  const title = chunk.title ?? 'Untitled'
+  const date = chunk.time_period ? `\n<span class="ai-date">${chunk.time_period}</span>` : ''
+  const url = chunk.url && title ? `\n\n[${title}](${chunk.url})` : ''
+  return `### ${title}${date}\n\n${chunk.context}${url}`
+}
+
 export async function POST(req: Request) {
   try {
     const { messages, userId } = await req.json()
@@ -42,12 +49,11 @@ export async function POST(req: Request) {
       })
     }
 
-    // Step 1: Fetch top 10 most similar chunks
     const vectorQuery = sql`
       SELECT document_id, chunk_index, collection_slug, title, context, keywords, url, time_period
       FROM embeddings
       ORDER BY embedding <-> ${sql.raw(`'${JSON.stringify(queryEmbedding)}'::vector(1536)`)}
-      LIMIT 10;
+      LIMIT 50;
     `
 
     const result = await db.execute(vectorQuery)
@@ -62,41 +68,34 @@ export async function POST(req: Request) {
       time_period: row.time_period as string,
     }))
 
-    // Step 2: Keyword boost: simple string matching to reorder
     const boosted = chunks.sort((a, b) => {
       const aMatch = keywordScore(a.keywords, userPrompt)
       const bMatch = keywordScore(b.keywords, userPrompt)
       return bMatch - aMatch
     })
 
-    // Step 3: Limit context to top 5 chunks
     const selectedChunks = boosted.slice(0, 5)
-    const context = selectedChunks
-      .map((chunk) => {
-        const urlLine = chunk.url ? `URL: ${chunk.url}` : ''
-        const periodLine = chunk.time_period ? `Period: ${chunk.time_period}` : ''
-        return `[${chunk.collection_slug.toUpperCase()} - ${chunk.title}]
-Chunk: ${chunk.chunk_index}
-${periodLine}
-Keywords: ${chunk.keywords.join(', ')}
-${urlLine}
-Content: ${chunk.context}`
-      })
-      .join('\n\n')
 
-    // Step 4: Query GPT-4
+    const context = selectedChunks.map(formatChunkMarkdown).join('\n\n---\n\n')
+
     const response = await openai.chat.completions.create({
       model: 'gpt-4-1106-preview',
       messages: [
         {
           role: 'system',
           content: `You are an AI assistant embedded within Kyle Holloway's AI-based portfolio.
-Only answer questions that pertain directly to Kyle Holloway’s career, skills, projects, experience and hobbies.
+
+Only answer questions that pertain directly to Kyle Holloway’s career, skills, projects, and experience.
 Only use the provided context chunks — do not hallucinate or assume facts.
-Always cite collection titles (e.g., 'BRINK Interactive') where possible to add clarity.
-If a URL is provided, format it as a Markdown link or button.
-Format responses with rich Markdown — use **bold**, bullet points, and lists to improve readability.
-Include any available time period if mentioned.`,
+
+Format responses with rich, **flexible** Markdown:
+- Use **bold**, bullet points, inline code, numbered lists.
+- Place all external links at the **end of each chunk**, never inline or inside lists.
+- Format links as [Label](https://url) where Label is the client or project name — not the raw URL.
+- Use <span class="ai-date">date</span> for time references if useful.
+- Use <hr class="ai-divider" /> to visually separate sections.
+- Let structure emerge naturally based on content. Don't force a template.
+- Use tasteful emojis to emphasize technologies, brands, or achievements.`,
         },
         {
           role: 'system',

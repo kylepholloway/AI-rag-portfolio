@@ -45,6 +45,9 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
         .values({
           documentId,
           chunkIndex: i,
+          title: doc.title ?? '',
+          url: doc.url ?? '',
+          timePeriod: doc.timePeriod ?? '',
           collectionSlug: collection.slug,
           embedding: vector,
           context: chunk,

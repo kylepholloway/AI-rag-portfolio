@@ -74,7 +74,6 @@ export interface Config {
     hobbies: Hobby;
     articles: Article;
     qa: Qa;
-    fineTuningPrompts: FineTuningPrompt;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -89,7 +88,6 @@ export interface Config {
     hobbies: HobbiesSelect<false> | HobbiesSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     qa: QaSelect<false> | QaSelect<true>;
-    fineTuningPrompts: FineTuningPromptsSelect<false> | FineTuningPromptsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -314,31 +312,6 @@ export interface Qa {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "fineTuningPrompts".
- */
-export interface FineTuningPrompt {
-  id: number;
-  prompt: string;
-  context: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -375,10 +348,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'qa';
         value: number | Qa;
-      } | null)
-    | ({
-        relationTo: 'fineTuningPrompts';
-        value: number | FineTuningPrompt;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -534,16 +503,6 @@ export interface QaSelect<T extends boolean = true> {
   title?: T;
   question?: T;
   answer?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "fineTuningPrompts_select".
- */
-export interface FineTuningPromptsSelect<T extends boolean = true> {
-  prompt?: T;
-  context?: T;
   updatedAt?: T;
   createdAt?: T;
 }

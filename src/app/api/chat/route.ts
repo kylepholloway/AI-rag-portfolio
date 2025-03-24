@@ -17,6 +17,7 @@ interface EmbeddingResult {
   keywords: string[]
   url?: string
   time_period?: string
+  role_level?: number
 }
 
 function formatChunkMarkdown(chunk: EmbeddingResult): string {
@@ -25,6 +26,26 @@ function formatChunkMarkdown(chunk: EmbeddingResult): string {
   const url = chunk.url ? `\n\n[${title}](${chunk.url})` : ''
   const context = chunk.context?.slice(0, 500).trim()
   return `### ${title}${date}\n\n${context}${url}`
+}
+
+function roleLevelScore(level?: number): number {
+  return typeof level === 'number' ? level : 3
+}
+
+function keywordScore(keywords: string[], prompt: string): number {
+  const promptLower = prompt.toLowerCase()
+  return keywords
+    .filter((k): k is string => typeof k === 'string')
+    .filter((k) => promptLower.includes(k.toLowerCase())).length
+}
+
+async function getCachedEmbedding(text: string): Promise<number[]> {
+  const cacheKey = crypto.createHash('sha256').update(text).digest('hex')
+  const embeddingResponse = await openai.embeddings.create({
+    model: 'text-embedding-ada-002',
+    input: text,
+  })
+  return embeddingResponse.data[0].embedding
 }
 
 export async function POST(req: Request) {
@@ -38,27 +59,52 @@ export async function POST(req: Request) {
     const queryEmbedding = await getCachedEmbedding(userPrompt)
 
     const vectorQuery = sql`
-      SELECT document_id, chunk_index, collection_slug, title, context, keywords, url, time_period
-      FROM embeddings
-      ORDER BY embedding <-> ${sql.raw(`'${JSON.stringify(queryEmbedding)}'::vector(1536)`)}
-      LIMIT 10;
-    `
+    SELECT document_id, chunk_index, collection_slug, title, context, keywords, url, time_period, role_level
+    FROM embeddings
+    ORDER BY embedding <-> ${sql.raw(`'${JSON.stringify(queryEmbedding)}'::vector(1536)`)}
+    LIMIT 25;
+  `
 
     const result = await db.execute(vectorQuery)
+
     const chunks: EmbeddingResult[] = result.rows.map((row) => ({
-      document_id: row.document_id as string,
-      chunk_index: row.chunk_index as number,
-      collection_slug: row.collection_slug as string,
-      title: row.title as string,
-      context: row.context as string,
-      keywords: row.keywords as string[],
-      url: row.url as string | undefined,
-      time_period: row.time_period as string | undefined,
+      document_id: String(row.document_id ?? ''),
+      chunk_index: Number(row.chunk_index ?? 0),
+      collection_slug: String(row.collection_slug ?? ''),
+      title: String(row.title ?? ''),
+      context: String(row.context ?? ''),
+      keywords: Array.isArray(row.keywords) ? (row.keywords as string[]) : [],
+      url: row.url ? String(row.url) : undefined,
+      time_period: row.time_period ? String(row.time_period) : undefined,
+      role_level:
+        typeof row.role_level === 'number'
+          ? row.role_level
+          : row.role_level
+            ? Number(row.role_level)
+            : undefined,
     }))
 
-    const boosted = chunks
-      .sort((a, b) => keywordScore(b.keywords, userPrompt) - keywordScore(a.keywords, userPrompt))
-      .slice(0, 3)
+    const scoredChunks = chunks.map((chunk) => {
+      const role = roleLevelScore(chunk.role_level)
+      const keyword = keywordScore(chunk.keywords, userPrompt)
+      const total = role + keyword
+      return { ...chunk, roleScore: role, keywordScore: keyword, totalScore: total }
+    })
+
+    // Log all scoring
+    console.log('\n🔎 Chunk Scores:')
+    scoredChunks.forEach((c, i) =>
+      console.log(
+        `#${i + 1} → [${c.title}] (${c.collection_slug}) → Role: ${c.roleScore}, Keyword: ${c.keywordScore}, Total: ${c.totalScore}`,
+      ),
+    )
+
+    const boosted = scoredChunks.sort((a, b) => b.totalScore - a.totalScore).slice(0, 3)
+
+    console.log('\n✅ Final Selected Chunks:')
+    boosted.forEach((c, i) =>
+      console.log(`#${i + 1} → [${c.title}] (${c.collection_slug}) → Total: ${c.totalScore}`),
+    )
 
     const context = boosted.map(formatChunkMarkdown).join('\n\n---\n\n')
 
@@ -96,21 +142,4 @@ If the context is not sufficient, clearly state that rather than assuming or gen
     console.error('❌ Chat error:', error)
     return Response.json({ error: 'Unexpected error.' }, { status: 500 })
   }
-}
-
-function keywordScore(keywords: string[], prompt: string): number {
-  const promptLower = prompt.toLowerCase()
-  return keywords.filter((k) => promptLower.includes(k.toLowerCase())).length
-}
-
-async function getCachedEmbedding(text: string): Promise<number[]> {
-  // Simple stateless cache key based on prompt hash
-  const cacheKey = crypto.createHash('sha256').update(text).digest('hex')
-
-  // You can replace this with a proper Redis/KV layer
-  const embeddingResponse = await openai.embeddings.create({
-    model: 'text-embedding-ada-002',
-    input: text,
-  })
-  return embeddingResponse.data[0].embedding
 }

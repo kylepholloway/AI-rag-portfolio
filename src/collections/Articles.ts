@@ -18,6 +18,18 @@ export const Articles: CollectionConfig = {
       labels: { singular: 'Keyword', plural: 'Keywords' },
       fields: [{ name: 'keyword', type: 'text', required: false }],
     },
+    {
+      name: 'roleLevel',
+      type: 'number',
+      label: 'Priority Level (1–5)',
+      min: 1,
+      max: 5,
+      defaultValue: 3,
+      admin: {
+        description: '5 = High, 4 = Medium, ..., 1 = Low',
+        position: 'sidebar',
+      },
+    },
   ],
   hooks: {
     afterChange: [generateEmbedding],

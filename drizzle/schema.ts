@@ -11,6 +11,7 @@ export const embeddings = pgTable('embeddings', {
   embedding: vector('embedding', { dimensions: 1536 }),
   context: text('context'),
   keywords: text('keywords').array(),
+  roleLevel: integer('role_level'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })

@@ -193,6 +193,10 @@ export interface WorkExperience {
         id?: string | null;
       }[]
     | null;
+  /**
+   * 5 = High, 4 = Medium, ..., 1 = Low
+   */
+  roleLevel?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -228,6 +232,10 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  /**
+   * 5 = High, 4 = Medium, ..., 1 = Low
+   */
+  roleLevel?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -239,6 +247,10 @@ export interface Skill {
   id: number;
   title: string;
   description: string;
+  /**
+   * 5 = High, 4 = Medium, ..., 1 = Low
+   */
+  roleLevel?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -250,6 +262,10 @@ export interface Hobby {
   id: number;
   title: string;
   description: string;
+  /**
+   * 5 = High, 4 = Medium, ..., 1 = Low
+   */
+  roleLevel?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -281,6 +297,10 @@ export interface Article {
         id?: string | null;
       }[]
     | null;
+  /**
+   * 5 = High, 4 = Medium, ..., 1 = Low
+   */
+  roleLevel?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -439,6 +459,7 @@ export interface WorkExperienceSelect<T extends boolean = true> {
         keyword?: T;
         id?: T;
       };
+  roleLevel?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -456,6 +477,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         keyword?: T;
         id?: T;
       };
+  roleLevel?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -466,6 +488,7 @@ export interface ProjectsSelect<T extends boolean = true> {
 export interface SkillsSelect<T extends boolean = true> {
   title?: T;
   description?: T;
+  roleLevel?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -476,6 +499,7 @@ export interface SkillsSelect<T extends boolean = true> {
 export interface HobbiesSelect<T extends boolean = true> {
   title?: T;
   description?: T;
+  roleLevel?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -492,6 +516,7 @@ export interface ArticlesSelect<T extends boolean = true> {
         keyword?: T;
         id?: T;
       };
+  roleLevel?: T;
   updatedAt?: T;
   createdAt?: T;
 }

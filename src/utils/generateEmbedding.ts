@@ -52,6 +52,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
           embedding: vector,
           context: chunk,
           keywords,
+          roleLevel: Number(doc.roleLevel) || 3,
           createdAt: new Date(),
           updatedAt: new Date(),
         })

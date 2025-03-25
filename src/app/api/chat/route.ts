@@ -22,9 +22,15 @@ interface EmbeddingResult {
 }
 
 function formatChunkMarkdown(chunk: EmbeddingResult): string {
+  const roleLine =
+    chunk.job_title && chunk.title
+      ? `Job Title: ${chunk.job_title} at ${chunk.title}`
+      : chunk.title
+        ? `Title: ${chunk.title}`
+        : ''
+
   const lines = [
-    chunk.title ? `Title: ${chunk.title}` : '',
-    chunk.job_title ? `Role: ${chunk.job_title}` : '',
+    roleLine,
     chunk.time_period ? `Time: ${chunk.time_period}` : '',
     chunk.url ? `URL: ${chunk.url}` : '',
     chunk.context?.slice(0, 500).trim() ?? '',

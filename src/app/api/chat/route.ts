@@ -155,10 +155,11 @@ export async function POST(req: Request) {
         - Use \`inline code\` for technologies, tools, or languages  
         - Use single-level bullet points and numbered lists  
         - Add [Markdown links](https://example.com) when URLs are available  
-        - Use <hr class="ai-divider" /> between major sections  
-        - Add relevant emojis to emphasize industries, tech, or achievements (💼, 🧠, ⚙️, 🛠️, etc.)  
+        - Use <hr class="ai-divider" /> between major sections for scannability  
+        - Use relevant emojis to enhance tone and context (💼, 🧠, ⚙️, 🛠️, 🚀, 🔥, etc.)  
         - Prefer natural, human-readable time formats like “Sep 2022 – Present”  
-        - Mix **brief narrative summaries** with bullet points for better flow  
+        - Start with a short, friendly introduction (1–2 sentences) to set up your response  
+        - Mix **narrative summaries** with bullet points for clarity  
         - Never use nested lists
         
         ---

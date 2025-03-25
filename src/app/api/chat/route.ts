@@ -137,7 +137,7 @@ export async function POST(req: Request) {
       .join('\n\n---\n\n')
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-1106',
+      model: 'gpt-4-0125-preview',
       messages: [
         {
           role: 'system',
@@ -159,8 +159,8 @@ export async function POST(req: Request) {
         - Use relevant emojis to enhance tone and context (💼, 🧠, ⚙️, 🛠️, 🚀, 🔥, etc.)  
         - Prefer natural, human-readable time formats like “Sep 2022 – Present”  
         - Start with a short, friendly introduction (1–2 sentences) to set up your response  
-        - Mix **narrative summaries** with bullet points for clarity  
-        - Never use nested lists
+        - Mix **narrative summaries** with bullet points for clarity
+        - Use nested bullet points to group related outcomes or sub-points under a top-level idea
         
         ---
         

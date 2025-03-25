@@ -13,6 +13,7 @@ interface EmbeddingResult {
   chunk_index: number
   collection_slug: string
   title: string
+  job_title?: string
   context: string
   keywords: string[]
   url?: string
@@ -23,6 +24,7 @@ interface EmbeddingResult {
 function formatChunkMarkdown(chunk: EmbeddingResult): string {
   const lines = [
     chunk.title ? `Title: ${chunk.title}` : '',
+    chunk.job_title ? `Role: ${chunk.job_title}` : '',
     chunk.time_period ? `Time: ${chunk.time_period}` : '',
     chunk.url ? `URL: ${chunk.url}` : '',
     chunk.context?.slice(0, 500).trim() ?? '',
@@ -66,7 +68,7 @@ export async function POST(req: Request) {
     const queryEmbedding = await getCachedEmbedding(userPrompt)
 
     const vectorQuery = sql`
-    SELECT document_id, chunk_index, collection_slug, title, context, keywords, url, time_period, role_level
+    SELECT document_id, chunk_index, collection_slug, title, job_title, context, keywords, url, time_period, role_level
     FROM embeddings
     ORDER BY embedding <-> ${sql.raw(`'${JSON.stringify(queryEmbedding)}'::vector(1536)`)}
     LIMIT 25;
@@ -83,6 +85,7 @@ export async function POST(req: Request) {
           chunk_index: Number(row.chunk_index ?? 0),
           collection_slug: String(row.collection_slug ?? ''),
           title: String(row.title ?? ''),
+          job_title: row.job_title ? String(row.job_title) : undefined,
           context: String(row.context ?? ''),
           keywords: Array.isArray(row.keywords) ? (row.keywords as string[]) : [],
           url: row.url ? String(row.url) : undefined,

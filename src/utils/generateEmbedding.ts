@@ -4,7 +4,6 @@ import { neon } from '@neondatabase/serverless'
 import { sql } from 'drizzle-orm'
 import { embeddings } from '../../drizzle/schema'
 import type { CollectionAfterChangeHook } from 'payload'
-import { time } from 'console'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const sqlClient = neon(process.env.EMBEDDINGS_POSTGRES_URL!)
@@ -24,7 +23,6 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
     const keywords = extractKeywords(doc)
     const chunks = chunkText(rawText, 300)
 
-    // Delete old chunks
     await db
       .delete(embeddings)
       .where(
@@ -47,6 +45,7 @@ const generateEmbedding: CollectionAfterChangeHook = async ({ doc, collection })
           documentId,
           chunkIndex: i,
           title: doc.title ?? '',
+          jobTitle: doc.jobTitle ?? '',
           url: doc.url ?? '',
           timePeriod: doc.timePeriod ?? '',
           collectionSlug: collection.slug,
@@ -71,8 +70,8 @@ function extractRelevantText(doc: Record<string, any>, slug: string): string {
   const segments: string[] = []
   const fields = {
     articles: ['title', 'content', 'keywords'],
-    projects: ['title', 'content', 'keywords', 'url', 'timePeriod'],
-    workExperience: ['title', 'content', 'keywords', 'url', 'timePeriod'],
+    projects: ['title', 'content', 'keywords', 'url', 'timePeriod', 'jobTitle'],
+    workExperience: ['title', 'content', 'keywords', 'url', 'timePeriod', 'jobTitle'],
     hobbies: ['title', 'description'],
     fineTuningPrompts: ['prompt', 'context'],
     qa: ['question', 'answer'],
@@ -81,14 +80,20 @@ function extractRelevantText(doc: Record<string, any>, slug: string): string {
 
   for (const field of fields) {
     const value = doc[field]
-    if (typeof value === 'string') segments.push(value)
-    if (field === 'keywords' && Array.isArray(value)) {
+    if (typeof value === 'string') {
+      segments.push(value)
+    } else if (field === 'jobTitle' && value) {
+      segments.push(`Job Title: ${value}`)
+    } else if (field === 'url' && value) {
+      segments.push(`URL: ${value}`)
+    } else if (field === 'timePeriod' && value) {
+      segments.push(`Period: ${value}`)
+    } else if (field === 'keywords' && Array.isArray(value)) {
       const words = value.map((k: any) => k.keyword).join(', ')
       segments.push(`Keywords: ${words}`)
+    } else if (typeof value === 'object') {
+      segments.push(extractPlainText(value))
     }
-    if (field === 'url' && value) segments.push(`URL: ${value}`)
-    if (field === 'timePeriod' && value) segments.push(`Period: ${value}`)
-    if (typeof value === 'object') segments.push(extractPlainText(value))
   }
 
   return segments.join(' ').trim()

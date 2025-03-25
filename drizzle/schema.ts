@@ -5,6 +5,7 @@ export const embeddings = pgTable('embeddings', {
   documentId: uuid('document_id'),
   chunkIndex: integer('chunk_index'),
   title: text('title'),
+  jobTitle: text('job_title'),
   url: text('url'),
   timePeriod: text('time_period'),
   collectionSlug: text('collection_slug'),

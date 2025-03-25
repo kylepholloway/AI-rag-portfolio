@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { streamText, embed } from 'ai'
 import { openai } from '@ai-sdk/openai'
 import { drizzle } from 'drizzle-orm/neon-http'

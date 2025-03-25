@@ -4,6 +4,7 @@ import { neon } from '@neondatabase/serverless'
 import { sql } from 'drizzle-orm'
 import { embeddings } from '../../drizzle/schema'
 import type { CollectionAfterChangeHook } from 'payload'
+import { time } from 'console'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const sqlClient = neon(process.env.EMBEDDINGS_POSTGRES_URL!)
@@ -70,7 +71,7 @@ function extractRelevantText(doc: Record<string, any>, slug: string): string {
   const segments: string[] = []
   const fields = {
     articles: ['title', 'content', 'keywords'],
-    projects: ['title', 'content', 'keywords', 'url'],
+    projects: ['title', 'content', 'keywords', 'url', 'timePeriod'],
     workExperience: ['title', 'content', 'keywords', 'url', 'timePeriod'],
     hobbies: ['title', 'description'],
     fineTuningPrompts: ['prompt', 'context'],

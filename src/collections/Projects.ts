@@ -8,7 +8,20 @@ export const Projects: CollectionConfig = {
   admin: { useAsTitle: 'title' },
   fields: [
     { name: 'title', type: 'text', required: true },
-    { name: 'content', type: 'richText', required: true, editor: lexicalEditor() },
+    {
+      name: 'jobTitle',
+      type: 'text',
+      required: false,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'content',
+      type: 'richText',
+      required: true,
+      editor: lexicalEditor(),
+    },
     {
       name: 'timePeriod',
       type: 'text',

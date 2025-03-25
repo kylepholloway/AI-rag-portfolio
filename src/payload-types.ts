@@ -167,6 +167,7 @@ export interface Media {
 export interface WorkExperience {
   id: number;
   title: string;
+  jobTitle?: string | null;
   timePeriod?: string | null;
   content: {
     root: {
@@ -207,6 +208,7 @@ export interface WorkExperience {
 export interface Project {
   id: number;
   title: string;
+  jobTitle?: string | null;
   content: {
     root: {
       type: string;
@@ -451,6 +453,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface WorkExperienceSelect<T extends boolean = true> {
   title?: T;
+  jobTitle?: T;
   timePeriod?: T;
   content?: T;
   url?: T;
@@ -470,6 +473,7 @@ export interface WorkExperienceSelect<T extends boolean = true> {
  */
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
+  jobTitle?: T;
   content?: T;
   timePeriod?: T;
   url?: T;

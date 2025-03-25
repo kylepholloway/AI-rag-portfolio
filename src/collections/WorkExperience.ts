@@ -13,6 +13,14 @@ export const WorkExperience: CollectionConfig = {
       required: true,
     },
     {
+      name: 'jobTitle',
+      type: 'text',
+      required: false,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'timePeriod',
       type: 'text',
       required: false,

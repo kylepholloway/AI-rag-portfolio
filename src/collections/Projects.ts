@@ -10,11 +10,20 @@ export const Projects: CollectionConfig = {
     { name: 'title', type: 'text', required: true },
     { name: 'content', type: 'richText', required: true, editor: lexicalEditor() },
     {
+      name: 'timePeriod',
+      type: 'text',
+      required: false,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'url',
       type: 'text',
       required: false,
       admin: {
         description: 'Provide a link to the project website or app if applicable.',
+        position: 'sidebar',
       },
     },
     {

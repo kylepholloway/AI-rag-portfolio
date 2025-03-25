@@ -16,6 +16,9 @@ export const WorkExperience: CollectionConfig = {
       name: 'timePeriod',
       type: 'text',
       required: false,
+      admin: {
+        position: 'sidebar',
+      },
     },
     {
       name: 'content',
@@ -29,6 +32,7 @@ export const WorkExperience: CollectionConfig = {
       required: false,
       admin: {
         description: 'Provide a link to the project website or app if applicable.',
+        position: 'sidebar',
       },
     },
     {

@@ -222,6 +222,7 @@ export interface Project {
     };
     [k: string]: unknown;
   };
+  timePeriod?: string | null;
   /**
    * Provide a link to the project website or app if applicable.
    */
@@ -470,6 +471,7 @@ export interface WorkExperienceSelect<T extends boolean = true> {
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  timePeriod?: T;
   url?: T;
   keywords?:
     | T

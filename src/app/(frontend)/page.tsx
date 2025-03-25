@@ -17,8 +17,8 @@ export default function Chat() {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const scrollAnchorRef = useRef<HTMLDivElement>(null)
   const isFetchingRef = useRef(false)
+  const hasStreamStartedRef = useRef(false)
 
-  // ✅ Ensure chat scrolls to the latest message or animation
   const scrollToBottom = useCallback(() => {
     scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [])
@@ -31,7 +31,8 @@ export default function Chat() {
     if (isFetchingRef.current) return
     isFetchingRef.current = true
     setLoading(true)
-    setError('') // ✅ Clear error when sending a message
+    setError('')
+    hasStreamStartedRef.current = false
 
     try {
       const response = await fetch('/api/chat', {
@@ -39,15 +40,43 @@ export default function Chat() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages }),
       })
-      const data = await response.json()
 
-      setHistory((prev) => [...prev, { role: 'assistant', content: data.reply }])
+      if (!response.body) throw new Error('No response body from AI')
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder('utf-8')
+      let assistantText = ''
+
+      setHistory((prev) => [...prev, { role: 'assistant', content: '' }])
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        if (!hasStreamStartedRef.current) {
+          hasStreamStartedRef.current = true
+          setLoading(false)
+        }
+
+        const chunk = decoder.decode(value, { stream: true })
+        assistantText += chunk
+
+        setHistory((prev) => {
+          const updated = [...prev]
+          const lastIndex = updated.length - 1
+          if (updated[lastIndex]?.role === 'assistant') {
+            updated[lastIndex].content = assistantText
+          }
+          return updated
+        })
+      }
     } catch (err) {
       console.error('❌ AI Fetch Error:', err)
-      setError('Failed to fetch response from AI.')
+      setError('Failed to stream AI response.')
     } finally {
       isFetchingRef.current = false
-      setLoading(false)
+      if (!hasStreamStartedRef.current) setLoading(false)
+      hasStreamStartedRef.current = false
     }
   }
 
@@ -69,7 +98,6 @@ export default function Chat() {
     }
   }
 
-  // ✅ Memoize the prompts to avoid unnecessary re-renders
   const prompts = useMemo(
     () => [
       'What makes Kyle stand out?',
@@ -88,7 +116,6 @@ export default function Chat() {
     [],
   )
 
-  // ✅ Optimized function with `useCallback` to generate random prompts
   const getRandomPrompts = useCallback(() => {
     const isMobile = window.innerWidth < 768
     const promptCount = isMobile ? 2 : 3
@@ -127,7 +154,6 @@ export default function Chat() {
               </p>
             </div>
 
-            {/* ✅ Display prompt buttons if no chat history */}
             {history.length === 0 && (
               <div className={styles.container__prompts}>
                 {randomPrompts.map((prompt, index) => (
@@ -138,7 +164,6 @@ export default function Chat() {
               </div>
             )}
 
-            {/* ✅ Display user and AI messages */}
             {history.map((msg, index) =>
               msg.role === 'user' ? (
                 <UserPrompt key={index}>{msg.content}</UserPrompt>
@@ -153,12 +178,10 @@ export default function Chat() {
               ),
             )}
 
-            {/* Scroll anchor to ensure smooth scrolling */}
             <div ref={scrollAnchorRef} />
             {error && <p className={styles.error}>{error}</p>}
           </div>
 
-          {/* ✅ Chat Form */}
           <AIForm
             onNewMessage={handleNewMessage}
             setError={setError}

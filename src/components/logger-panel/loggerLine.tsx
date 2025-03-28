@@ -6,13 +6,8 @@ type LoggerLineProps = {
 }
 
 const LoggerLine = ({ log }: LoggerLineProps) => {
-  // Special render for divider
   if (log.category === 'divider') {
-    return (
-      <div className={`${styles.logLine} ${styles.divider}`}>
-        <hr className="log-divider" />
-      </div>
-    )
+    return <hr className={styles.divider} />
   }
 
   return (

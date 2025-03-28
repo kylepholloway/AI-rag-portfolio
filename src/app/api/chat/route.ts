@@ -97,7 +97,7 @@ export async function POST(req: Request) {
 
   const queryEmbedding = await getCachedEmbedding(userPrompt)
 
-  await serverLogger.proxy('Searching vector database for top 25 chunks', 'rag')
+  await serverLogger.proxy('Searching vector catabase', 'rag')
   const vectorQuery = sql`
     SELECT document_id, chunk_index, collection_slug, title, job_title, context, keywords, url, time_period, role_level
     FROM embeddings
@@ -141,9 +141,9 @@ export async function POST(req: Request) {
         boostLogSet.add(chunk.collection_slug)
 
         await serverLogger.proxy(
-          `<div>⚙️ <strong>Category Boost Applied:</strong><br/>
-             Detected keyword: <code>${boostResult.keyword}</code><br/>
-             Boosting '<code>${chunk.collection_slug}</code>' collection → +${boostResult.value} weight</div>`,
+          `Category boost applied:<ul>
+             <li>- Detected keyword: <code>${boostResult.keyword}</code></li>
+             <li>- Boosting <code>${chunk.collection_slug}</code> collection → +${boostResult.value} weight</li></ul>`,
           'boosting',
         )
       }
@@ -164,11 +164,11 @@ export async function POST(req: Request) {
   const scoredListHTML = boosted
     .map(
       (chunk) =>
-        `<li>"${chunk.title}" (${chunk.collection_slug}) – Score: ${chunk.totalScore}</li>`,
+        `<li>- ${chunk.title} (${chunk.collection_slug}) – Score: ${chunk.totalScore}</li>`,
     )
     .join('')
 
-  await serverLogger.proxy(`🎯 Top Scored Chunks:<ul>${scoredListHTML}</ul>`, 'scoring')
+  await serverLogger.proxy(`🎯 Top scored chunks:<ul>${scoredListHTML}</ul>`, 'scoring')
 
   const context = boosted
     .map((chunk) => {

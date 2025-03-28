@@ -9,7 +9,7 @@ form {
     position: relative;
     width: 100%;
     @include breakpoint(lg) {
-        width: 600px;
+        max-width: 600px;
     }
 
     input {

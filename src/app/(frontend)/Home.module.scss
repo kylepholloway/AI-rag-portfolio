@@ -62,7 +62,7 @@
         overflow-x: hidden;
         padding: 0 var(--space-sm) var(--space-sm);
         @include breakpoint(lg) {
-            width: 600px;
+            max-width: 600px;
             padding: 0 var(--space-xs) 0 var(--space-base);
         }
 

@@ -3,7 +3,6 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { LoggerProvider } from '@/utils/loggerProvider'
-import LoggerPanel from '@/components/logger-panel'
 
 export const metadata: Metadata = {
   title: 'Kyle Holloway | AI Portfolio',
@@ -27,7 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <LoggerProvider>
           {children}
-          <LoggerPanel />
           <Analytics />
           <SpeedInsights />
         </LoggerProvider>

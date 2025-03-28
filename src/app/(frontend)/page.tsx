@@ -10,6 +10,7 @@ import TypingEffect from '@/components/typing-effect'
 import Head from 'next/head'
 import MobileMenu from '@/components/mobile-menu'
 import { useLogger } from '@/utils/loggerProvider'
+import LoggerPanel from '@/components/logger-panel'
 
 export default function Chat() {
   const [history, setHistory] = useState<{ role: string; content: string }[]>([])
@@ -199,6 +200,7 @@ export default function Chat() {
             isActive={history.length > 0}
           />
         </section>
+        <LoggerPanel />
       </div>
     </>
   )

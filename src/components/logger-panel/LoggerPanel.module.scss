@@ -1,0 +1,69 @@
+.panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: #111;
+    color: #eee;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s ease;
+    z-index: 9999;
+    border-left: 1px solid #333;
+  }
+  
+  .open {
+    right: 0;
+  }
+  
+  .header {
+    padding: 1rem;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    font-weight: bold;
+  }
+  
+  .logs {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+  
+  .logLine {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  
+  .label {
+    margin: 0 0.5rem;
+    font-weight: bold;
+    color: #0ff;
+  }
+  
+  .message {
+    color: #fff;
+  }
+  
+  .toggleButton {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 10000;
+    padding: 0.5rem 1rem;
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .toggleButton:hover {
+    background: #444;
+  }
+  

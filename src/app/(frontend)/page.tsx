@@ -9,6 +9,7 @@ import AIForm from '@/components/ai-form'
 import TypingEffect from '@/components/typing-effect'
 import Head from 'next/head'
 import MobileMenu from '@/components/mobile-menu'
+import { useLogger } from '@/utils/loggerProvider'
 
 export default function Chat() {
   const [history, setHistory] = useState<{ role: string; content: string }[]>([])
@@ -18,6 +19,7 @@ export default function Chat() {
   const scrollAnchorRef = useRef<HTMLDivElement>(null)
   const isFetchingRef = useRef(false)
   const hasStreamStartedRef = useRef(false)
+  const { addLog } = useLogger()
 
   const scrollToBottom = useCallback(() => {
     scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -33,6 +35,8 @@ export default function Chat() {
     setLoading(true)
     setError('')
     hasStreamStartedRef.current = false
+
+    const start = performance.now() // ← Start timer
 
     try {
       const response = await fetch('/api/chat', {
@@ -70,6 +74,9 @@ export default function Chat() {
           return updated
         })
       }
+
+      const duration = ((performance.now() - start) / 1000).toFixed(1)
+      addLog(`Response complete in ${duration}s`, 'complete')
     } catch (err) {
       console.error('❌ AI Fetch Error:', err)
       setError('Failed to stream AI response.')
@@ -94,6 +101,7 @@ export default function Chat() {
 
   const handlePromptClick = (prompt: string) => {
     if (!loading) {
+      addLog(`Quick prompt button clicked: “${prompt}”`, 'pre-prompt')
       handleNewMessage({ role: 'user', content: prompt })
     }
   }

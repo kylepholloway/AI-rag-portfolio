@@ -49,7 +49,6 @@ export const serverLogger = {
       category,
     }
     logs.push(entry)
-    console.log(`[proxyLog] ${entry.timestamp} ${entry.emoji} ${entry.message}`)
   },
 
   flush: (): LogEntry[] => {

@@ -55,7 +55,9 @@ function keywordScore(keywords: string[], prompt: string): number {
     .filter((k) => promptLower.includes(k.toLowerCase())).length
 }
 
-function categoryBoost(collection: string, prompt: string): number {
+const boostValue = 3
+
+function categoryBoost(collection: string, prompt: string): { value: number; keyword?: string } {
   const categories = {
     work: ['work', 'career', 'job', 'role', 'company', 'experience'],
     projects: ['project', 'projects', 'initiative', 'case study'],
@@ -65,12 +67,13 @@ function categoryBoost(collection: string, prompt: string): number {
 
   const promptLower = prompt.toLowerCase()
   for (const [category, triggers] of Object.entries(categories)) {
-    if (triggers.some((term) => promptLower.includes(term))) {
-      if (collection.toLowerCase().includes(category)) return 3
+    const match = triggers.find((term) => promptLower.includes(term))
+    if (match && collection.toLowerCase().includes(category)) {
+      return { value: boostValue, keyword: match }
     }
   }
 
-  return 0
+  return { value: 0 }
 }
 
 async function getCachedEmbedding(text: string): Promise<number[]> {
@@ -126,31 +129,46 @@ export async function POST(req: Request) {
     })
     .filter(Boolean) as EmbeddingResult[]
 
-  const scoredChunks = chunks.map((chunk) => {
-    const role = roleLevelScore(chunk.role_level)
-    const keyword = keywordScore(chunk.keywords, userPrompt)
-    const category = categoryBoost(chunk.collection_slug, userPrompt)
+  const boostLogSet = new Set<string>()
 
-    if (category > 0) {
-      serverLogger.proxy(
-        `Boosted category: ${chunk.collection_slug} (matched keyword in prompt)`,
-        'boosting',
-      )
-    }
+  const scoredChunks = await Promise.all(
+    chunks.map(async (chunk) => {
+      const role = roleLevelScore(chunk.role_level)
+      const keyword = keywordScore(chunk.keywords, userPrompt)
+      const boostResult = categoryBoost(chunk.collection_slug, userPrompt)
 
-    const total = role + keyword + category
-    return {
-      ...chunk,
-      roleScore: role,
-      keywordScore: keyword,
-      categoryBoost: category,
-      totalScore: total,
-    }
-  })
+      if (boostResult.value > 0 && !boostLogSet.has(chunk.collection_slug)) {
+        boostLogSet.add(chunk.collection_slug)
 
-  await serverLogger.proxy('Scored all chunks → Top 5 selected', 'scoring')
+        await serverLogger.proxy(
+          `<div>⚙️ <strong>Category Boost Applied:</strong><br/>
+             Detected keyword: <code>${boostResult.keyword}</code><br/>
+             Boosting '<code>${chunk.collection_slug}</code>' collection → +${boostResult.value} weight</div>`,
+          'boosting',
+        )
+      }
+
+      const total = role + keyword + boostResult.value
+      return {
+        ...chunk,
+        roleScore: role,
+        keywordScore: keyword,
+        categoryBoost: boostResult.value,
+        totalScore: total,
+      }
+    }),
+  )
 
   const boosted = scoredChunks.sort((a, b) => b.totalScore - a.totalScore).slice(0, 5)
+
+  const scoredListHTML = boosted
+    .map(
+      (chunk) =>
+        `<li>"${chunk.title}" (${chunk.collection_slug}) – Score: ${chunk.totalScore}</li>`,
+    )
+    .join('')
+
+  await serverLogger.proxy(`🎯 Top Scored Chunks:<ul>${scoredListHTML}</ul>`, 'scoring')
 
   const context = boosted
     .map((chunk) => {

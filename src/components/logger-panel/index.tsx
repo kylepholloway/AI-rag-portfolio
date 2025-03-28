@@ -35,8 +35,6 @@ const LoggerPanel = () => {
             {logs.map((log, idx) => (
               <LoggerLine key={idx} log={log} />
             ))}
-
-            <pre style={{ color: '#0f0', fontSize: 12 }}>{JSON.stringify(logs, null, 2)}</pre>
           </>
         )}
       </div>

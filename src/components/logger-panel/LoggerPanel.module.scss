@@ -67,3 +67,44 @@
     background: #444;
   }
   
+  .indent {
+    margin-left: 1.5rem;
+    font-size: 0.9em;
+    color: #ccc;
+  }
+  
+
+  .message ul {
+    margin: 0.25rem 0 0 1rem;
+    padding: 0;
+    list-style: disc;
+    font-size: 0.875rem;
+    color: #ccc;
+  }
+  
+  .message li {
+    margin-bottom: 0.25rem;
+  }
+  
+  .logLine code {
+    background: #f0f0f0;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+
+  .logLine.divider {
+    padding: 0;
+    margin: 1rem 0;
+    border: none;
+  }
+  
+  .logLine.divider hr.log-divider {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 0;
+    height: 1px;
+    width: 100%;
+  }
+  
+  

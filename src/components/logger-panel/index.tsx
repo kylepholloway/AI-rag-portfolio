@@ -7,7 +7,7 @@ import LoggerLine from './loggerLine'
 import Drawer from '@/assets/icons/drawer.svg'
 
 const LoggerPanel = () => {
-  const { logs, clearLogs, status } = useLogger()
+  const { logs, status } = useLogger()
   const [isClosed, setIsClosed] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const prevLogsLength = useRef(logs.length)
@@ -48,7 +48,7 @@ const LoggerPanel = () => {
 
       <div className={styles.logs} ref={scrollRef}>
         {logs.length === 0 ? (
-          <p className={styles.empty}>// Initiate chat to see the magic ✨</p>
+          <p className={styles.empty}>&#47;&#47; Initiate chat to see the magic ✨</p>
         ) : (
           <>
             {logs.map((log, idx) => (

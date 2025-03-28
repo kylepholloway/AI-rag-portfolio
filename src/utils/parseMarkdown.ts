@@ -34,8 +34,6 @@ export function parseMarkdown(input: string): string {
 
     // Normalize stray heading hashes
     line = line.replace(/^#+\s*#+\s*/, '### ')
-    const nextLine = lines[i + 1] || ''
-
     line = processLinks(line)
     line = line.replace(/\*\*(.*?)\*\*/g, '<strong class="ai-bold">$1</strong>')
     line = line.replace(/`([^`]+)`/g, '<code class="ai-inline-code">$1</code>')

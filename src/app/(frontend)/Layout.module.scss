@@ -1,0 +1,8 @@
+@use '../../styles/mixins/breakpoints' as *;
+
+.navbar {
+    display: none;
+    @include breakpoint(lg) {
+        display: flex;
+    }
+}

@@ -77,7 +77,7 @@ export default function Chat() {
       }
 
       const duration = ((performance.now() - start) / 1000).toFixed(1)
-      addLog(`Response complete in ${duration}s`, 'complete')
+      addLog(`Responded in ${duration}s`, 'complete')
       addLog('<hr class="log-divider" />', 'divider')
     } catch (err) {
       console.error('❌ AI Fetch Error:', err)

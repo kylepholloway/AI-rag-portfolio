@@ -77,7 +77,7 @@ function categoryBoost(collection: string, prompt: string): { value: number; key
 }
 
 async function getCachedEmbedding(text: string): Promise<number[]> {
-  await serverLogger.proxy('Generating embedding vector (1536-dim)', 'embedding')
+  await serverLogger.proxy('Vector (1536-dim)', 'embedding')
   const response = await embed({
     model: openai.embedding('text-embedding-ada-002'),
     value: text,
@@ -93,11 +93,11 @@ async function getCachedEmbedding(text: string): Promise<number[]> {
 export async function POST(req: Request) {
   const { messages, userId } = await req.json()
   const userPrompt = messages.at(-1)?.content || ''
-  await serverLogger.proxy(`Prompt received: “${userPrompt}”`, 'prompt')
+  await serverLogger.proxy(`Prompt received:<p>“${userPrompt}”</p>`, 'prompt')
 
   const queryEmbedding = await getCachedEmbedding(userPrompt)
 
-  await serverLogger.proxy('Searching vector catabase', 'rag')
+  await serverLogger.proxy('Searching vector database', 'rag')
   const vectorQuery = sql`
     SELECT document_id, chunk_index, collection_slug, title, job_title, context, keywords, url, time_period, role_level
     FROM embeddings
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
         boostLogSet.add(chunk.collection_slug)
 
         await serverLogger.proxy(
-          `Category boost applied:<ul>
+          `<ul>
              <li>- Detected keyword: <code>${boostResult.keyword}</code></li>
              <li>- Boosting <code>${chunk.collection_slug}</code> collection → +${boostResult.value} weight</li></ul>`,
           'boosting',
@@ -179,9 +179,9 @@ export async function POST(req: Request) {
     .join('\n\n---\n\n')
 
   const estimatedTokens = Math.ceil(context.split(' ').length * 1.3)
-  await serverLogger.proxy(`Estimated token count: ${estimatedTokens}`, 'tokens')
-  await serverLogger.proxy('Compiled context and user prompt', 'context')
-  await serverLogger.proxy('Sending to GPT-4.5-preview (streaming)', 'llm')
+  await serverLogger.proxy(`Estimated count: ${estimatedTokens}`, 'tokens')
+  await serverLogger.proxy('Compiled context, system and user prompts', 'context')
+  await serverLogger.proxy('Sending to GPT-4.5-preview', 'llm')
 
   const result = await streamText({
     model: openai.chat('gpt-4.5-preview'),
@@ -194,7 +194,7 @@ export async function POST(req: Request) {
     user: userId,
   })
 
-  await serverLogger.proxy('Response streaming started', 'stream')
+  await serverLogger.proxy('Response started', 'stream')
 
   return new Response(result.textStream, {
     headers: {

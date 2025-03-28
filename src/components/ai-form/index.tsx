@@ -29,7 +29,7 @@ const AIForm: React.FC<AIFormProps> = ({
       return
     }
 
-    addLog(`Prompt submitted: “${input}”`, 'prompt')
+    addLog(`Prompt submitted:<p>“${input}”</p>`, 'prompt')
 
     setLoading(true)
     setError('')
@@ -45,7 +45,7 @@ const AIForm: React.FC<AIFormProps> = ({
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask me anything about Kyle Holloway..."
+        placeholder="Ask about Kyle Holloway..."
         disabled={loading}
       />
       <button type="submit" disabled={loading}>
